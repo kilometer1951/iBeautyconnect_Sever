@@ -107,7 +107,7 @@ module.exports = app => {
     } catch (e) {
       return httpRespond.authRespond(res, {
         status: false,
-        message: "error"
+        message: e
       });
     }
   });
