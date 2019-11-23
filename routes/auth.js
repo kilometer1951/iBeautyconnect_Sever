@@ -78,10 +78,10 @@ module.exports = app => {
 
   app.post("/auth/uploadDocuments/:userId", async (req, res) => {
     try {
-      const profilePhotoUpload = await cloudinary.uploader.upload(
+      const profilePhotoUpload = await cloudinary.v2.uploader.upload(
         req.body.profilePhotoUpload
       );
-      const licensePhotoUpload = await cloudinary.uploader.upload(
+      const licensePhotoUpload = await cloudinary.v2.uploader.upload(
         req.body.licensePhotoUpload
       );
 
