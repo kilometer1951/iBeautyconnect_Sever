@@ -6,6 +6,14 @@ const httpRespond = require("../functions/httpRespond");
 const smsFunctions = require("../functions/SMS");
 let messageBody = "";
 
+const multer = require("multer");
+const storage = multer.diskStorage({
+  filename: function(req, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  }
+});
+const upload = multer({ storage: storage });
+
 const cloudinary = require("cloudinary");
 cloudinary.config({
   cloud_name: "dtfyfl4kz",
@@ -76,39 +84,86 @@ module.exports = app => {
     return res.send(userFound);
   });
 
-  app.post("/auth/uploadDocuments/:userId", async (req, res) => {
-    try {
-      const profilePhotoUpload = await cloudinary.v2.uploader.upload(
-        req.body.profilePhotoUpload
-      );
-      const licensePhotoUpload = await cloudinary.v2.uploader.upload(
-        req.body.licensePhotoUpload
-      );
-
-      const user = await User.findOne({ _id: req.params.userId });
-      user.location = req.body.location;
-      user.profilePhoto = req.body.profilePhotoUpload;
-      user.profession = req.body.profession;
-      user.ssnNumber = req.body.ssnNumber;
-      user.introScreen = true;
-      user.licenseDocument = [
-        {
-          licenseNumber: req.body.licenseNumber,
-          path: req.body.licensePhotoUpload,
-          issuedState: req.body.issuedState,
-          expirationDate: req.body.licenseExpirationDate
-        }
-      ];
-      user.save();
-      return httpRespond.authRespond(res, {
-        status: true,
-        message: "upload complete"
-      });
-    } catch (e) {
-      return httpRespond.authRespond(res, {
-        status: false,
-        message: e
-      });
+  app.post(
+    "/auth/uploadProfilePhoto/:userId",
+    upload.single("profilePhoto"),
+    async (req, res) => {
+      try {
+        //  console.log(req.file);
+        const response = await cloudinary.uploader.upload(req.file.path);
+        console.log(response);
+        // const licensePhotoUpload = await cloudinary.uploader.upload(
+        //   req.body.licensePhotoUpload
+        // );
+        //
+        // const user = await User.findOne({ _id: req.params.userId });
+        // user.location = req.body.location;
+        // user.profilePhoto = req.body.profilePhotoUpload;
+        // user.profession = req.body.profession;
+        // user.ssnNumber = req.body.ssnNumber;
+        // user.introScreen = true;
+        // user.licenseDocument = [
+        //   {
+        //     licenseNumber: req.body.licenseNumber,
+        //     path: req.body.licensePhotoUpload,
+        //     issuedState: req.body.issuedState,
+        //     expirationDate: req.body.licenseExpirationDate
+        //   }
+        // ];
+        // user.save();
+        // return httpRespond.authRespond(res, {
+        //   status: true,
+        //   message: "upload complete"
+        // });
+      } catch (e) {
+        console.log(e);
+        return httpRespond.authRespond(res, {
+          status: false,
+          message: e
+        });
+      }
     }
-  });
+  );
+
+  app.post(
+    "/auth/uploadLicense/:userId",
+    upload.single("licensePhoto"),
+    async (req, res) => {
+      try {
+        console.log(req.file);
+        // const profilePhotoUpload = await cloudinary.uploader.upload(
+        //   req.body.profilePhotoUpload
+        // );
+        // const licensePhotoUpload = await cloudinary.uploader.upload(
+        //   req.body.licensePhotoUpload
+        // );
+        //
+        // const user = await User.findOne({ _id: req.params.userId });
+        // user.location = req.body.location;
+        // user.profilePhoto = req.body.profilePhotoUpload;
+        // user.profession = req.body.profession;
+        // user.ssnNumber = req.body.ssnNumber;
+        // user.introScreen = true;
+        // user.licenseDocument = [
+        //   {
+        //     licenseNumber: req.body.licenseNumber,
+        //     path: req.body.licensePhotoUpload,
+        //     issuedState: req.body.issuedState,
+        //     expirationDate: req.body.licenseExpirationDate
+        //   }
+        // ];
+        // user.save();
+        // return httpRespond.authRespond(res, {
+        //   status: true,
+        //   message: "upload complete"
+        // });
+      } catch (e) {
+        console.log(e);
+        return httpRespond.authRespond(res, {
+          status: false,
+          message: e
+        });
+      }
+    }
+  );
 };
