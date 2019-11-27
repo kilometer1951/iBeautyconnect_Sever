@@ -79,7 +79,7 @@ module.exports = app => {
       { isActive: 1, hasGoneThroughFinalScreen: 1, introScreen: 1 }
     );
 
-    console.log(userFound);
+    //  console.log(userFound);
 
     return res.send(userFound);
   });
@@ -89,32 +89,14 @@ module.exports = app => {
     upload.single("profilePhoto"),
     async (req, res) => {
       try {
-        //  console.log(req.file);
         const response = await cloudinary.uploader.upload(req.file.path);
-        console.log(response);
-        // const licensePhotoUpload = await cloudinary.uploader.upload(
-        //   req.body.licensePhotoUpload
-        // );
-        //
-        // const user = await User.findOne({ _id: req.params.userId });
-        // user.location = req.body.location;
-        // user.profilePhoto = req.body.profilePhotoUpload;
-        // user.profession = req.body.profession;
-        // user.ssnNumber = req.body.ssnNumber;
-        // user.introScreen = true;
-        // user.licenseDocument = [
-        //   {
-        //     licenseNumber: req.body.licenseNumber,
-        //     path: req.body.licensePhotoUpload,
-        //     issuedState: req.body.issuedState,
-        //     expirationDate: req.body.licenseExpirationDate
-        //   }
-        // ];
-        // user.save();
-        // return httpRespond.authRespond(res, {
-        //   status: true,
-        //   message: "upload complete"
-        // });
+        const user = await User.findOne({ _id: req.params.userId });
+        user.profilePhoto = response.url;
+        user.save();
+        return httpRespond.authRespond(res, {
+          status: true,
+          message: "upload complete"
+        });
       } catch (e) {
         console.log(e);
         return httpRespond.authRespond(res, {
@@ -130,33 +112,25 @@ module.exports = app => {
     upload.single("licensePhoto"),
     async (req, res) => {
       try {
-        console.log(req.file);
-        // const profilePhotoUpload = await cloudinary.uploader.upload(
-        //   req.body.profilePhotoUpload
-        // );
-        // const licensePhotoUpload = await cloudinary.uploader.upload(
-        //   req.body.licensePhotoUpload
-        // );
-        //
-        // const user = await User.findOne({ _id: req.params.userId });
-        // user.location = req.body.location;
-        // user.profilePhoto = req.body.profilePhotoUpload;
-        // user.profession = req.body.profession;
-        // user.ssnNumber = req.body.ssnNumber;
-        // user.introScreen = true;
-        // user.licenseDocument = [
-        //   {
-        //     licenseNumber: req.body.licenseNumber,
-        //     path: req.body.licensePhotoUpload,
-        //     issuedState: req.body.issuedState,
-        //     expirationDate: req.body.licenseExpirationDate
-        //   }
-        // ];
-        // user.save();
-        // return httpRespond.authRespond(res, {
-        //   status: true,
-        //   message: "upload complete"
-        // });
+        const response = await cloudinary.uploader.upload(req.file.path);
+        const user = await User.findOne({ _id: req.params.userId });
+        user.location = req.body.location;
+        user.profession = req.body.profession;
+        user.ssnNumber = req.body.ssnNumber;
+        user.introScreen = true;
+        user.licenseDocument = [
+          {
+            licenseNumber: req.body.licenseNumber,
+            path: response.url,
+            issuedState: req.body.issuedState,
+            expirationDate: req.body.licenseExpirationDate
+          }
+        ];
+        user.save();
+        return httpRespond.authRespond(res, {
+          status: true,
+          message: "upload complete"
+        });
       } catch (e) {
         console.log(e);
         return httpRespond.authRespond(res, {
