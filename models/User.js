@@ -3,8 +3,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 let userSchema = new Schema({
-  firstName: String,
-  lastName: String,
+  name: String,
   phone: String,
   email: String,
   password: String,
@@ -24,6 +23,14 @@ let userSchema = new Schema({
       needsAttention: { type: Boolean, default: false },
       issuedState: { type: String, default: "" },
       expirationDate: { type: Date, default: Date.now }
+    }
+  ],
+  services: [
+    {
+      serviceName: { type: String, default: "" },
+      serviceHour: { type: String, default: "" },
+      servicePricePerHour: { type: String, default: "" },
+      serviceDescription: { type: String, default: "" }
     }
   ]
 });

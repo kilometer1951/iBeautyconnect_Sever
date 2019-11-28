@@ -76,11 +76,8 @@ module.exports = app => {
   app.get("/auth/userIsActive/:userId", async (req, res) => {
     const userFound = await User.findOne(
       { _id: req.params.userId },
-      { isActive: 1, hasGoneThroughFinalScreen: 1, introScreen: 1 }
+      { isActive: 1, hasGoneThroughFinalScreen: 1, introScreen: 1, name: 1 }
     );
-
-    //  console.log(userFound);
-
     return res.send(userFound);
   });
 
