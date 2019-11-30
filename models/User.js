@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 let userSchema = new Schema({
-  name: String,
+  fName: String,
+  lName: String,
   phone: String,
   email: String,
   password: String,
@@ -13,7 +14,9 @@ let userSchema = new Schema({
   profession: { type: String, default: "" },
   online: { type: Boolean, default: false },
   isActive: { type: Boolean, default: false },
-  location: { type: String, default: "" },
+  locationState: { type: String, default: "" },
+  locationCity: { type: String, default: "" },
+  businessAddress: { type: String, default: "" },
   ssnNumber: { type: String, default: "" },
   licenseDocument: [
     {

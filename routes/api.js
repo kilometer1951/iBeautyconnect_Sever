@@ -46,6 +46,15 @@ module.exports = app => {
     });
   });
 
+  app.post("/api/updateBusinessAddress/:userId", async (req, res) => {
+    const user = await User.findOne({ _id: req.params.userId });
+    user.businessAddress = req.body.businessAddress;
+    await user.save();
+    return httpRespond.authRespond(res, {
+      status: true
+    });
+  });
+
   app.post("/api/add/service/:userId", async (req, res) => {
     const user = await User.findOne(
       { _id: req.params.userId },
@@ -67,45 +76,33 @@ module.exports = app => {
   });
 
   app.post("/api/edit/:userId/service/:serviceId/", async (req, res) => {
+    const updateService = await User.findOne(
+      {
+        _id: req.params.userId
+      },
+      { services: 1 }
+    );
+
+    for (var i = 0; i < updateService.services.length; i++) {
+      if (updateService.services[i]._id.equals(req.params.serviceId)) {
+        updateService.services[i] = {
+          serviceName: req.body.serviceName,
+          serviceHour: req.body.serviceHour,
+          servicePricePerHour: req.body.servicePricePerHour,
+          serviceDescription: req.body.serviceDescription
+        };
+      }
+    }
+    await updateService.save();
     const user = await User.findOne(
       {
         _id: req.params.userId
       },
       { services: 1 }
     );
-    const updateData = user.services.filter(
-      value => value._id == req.params.serviceId
-    );
-    let data = updateData[0];
-    data = {
-      serviceName: req.body.serviceName,
-      serviceHour: req.body.serviceHour,
-      servicePricePerHour: req.body.servicePricePerHour,
-      serviceDescription: req.body.serviceDescription
-    };
-    user.services = data;
-    await user.save();
     return httpRespond.authRespond(res, {
       status: true,
       user
     });
   });
 };
-
-// for (var i = 0; i < updateService.services.length; i++) {
-//   if (updateService.services[i]._id.equals(req.params.serviceId)) {
-//     updateService.services[i] = {
-//       serviceName: req.body.serviceName,
-//       serviceHour: req.body.serviceHour,
-//       servicePricePerHour: req.body.servicePricePerHour,
-//       serviceDescription: req.body.serviceDescription
-//     };
-//   }
-// }
-// await updateService.save();
-// const user = await User.findOne(
-//   {
-//     _id: req.params.userId
-//   },
-//   { services: 1 }
-// );

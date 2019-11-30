@@ -38,7 +38,8 @@ module.exports = app => {
       });
     }
     const newUser = {
-      name: req.body.name,
+      fName: req.body.fName,
+      lName: req.body.lName,
       phone: req.body.phone,
       email: req.body.email,
       password: password.encryptPassword(req.body.password)
@@ -76,7 +77,14 @@ module.exports = app => {
   app.get("/auth/userIsActive/:userId", async (req, res) => {
     const userFound = await User.findOne(
       { _id: req.params.userId },
-      { isActive: 1, hasGoneThroughFinalScreen: 1, introScreen: 1, name: 1 }
+      {
+        isActive: 1,
+        hasGoneThroughFinalScreen: 1,
+        introScreen: 1,
+        fName: 1,
+        lName: 1,
+        businessAddress: 1
+      }
     );
     return res.send(userFound);
   });
@@ -111,7 +119,10 @@ module.exports = app => {
       try {
         const response = await cloudinary.uploader.upload(req.file.path);
         const user = await User.findOne({ _id: req.params.userId });
-        user.location = req.body.location;
+
+        user.locationState = req.body.locationState;
+        user.locationCity = req.body.locationCity;
+        user.businessAddress = req.body.businessAddress;
         user.profession = req.body.profession;
         user.ssnNumber = req.body.ssnNumber;
         user.introScreen = true;
