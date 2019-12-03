@@ -18,6 +18,7 @@ let userSchema = new Schema({
   locationCity: { type: String, default: "" },
   businessAddress: { type: String, default: "" },
   ssnNumber: { type: String, default: "" },
+  salesVideo: { type: String, default: "" },
   licenseDocument: [
     {
       licenseNumber: { type: String, default: "" },
@@ -35,7 +36,8 @@ let userSchema = new Schema({
       servicePricePerHour: { type: String, default: "" },
       serviceDescription: { type: String, default: "" }
     }
-  ]
+  ],
+  comfortFee: { type: String, default: "" }
 });
 
 mongoose.model("users", userSchema);

@@ -113,6 +113,33 @@ module.exports = app => {
   );
 
   app.post(
+    "/auth/uploadVideo/:userId",
+    upload.single("uploadVideo"),
+    async (req, res) => {
+      try {
+        const response = await cloudinary.v2.uploader.upload(req.file.path, {
+          resource_type: "video"
+        });
+        console.log(response.url);
+        //  const user = await User.findOne({ _id: req.params.userId });
+        //  user.salesVideo = response.url;
+        // user.save();
+        return httpRespond.authRespond(res, {
+          status: true,
+          message: "upload complete",
+          video: response.url
+        });
+      } catch (e) {
+        console.log(e);
+        return httpRespond.authRespond(res, {
+          status: false,
+          message: e
+        });
+      }
+    }
+  );
+
+  app.post(
     "/auth/uploadLicense/:userId",
     upload.single("licensePhoto"),
     async (req, res) => {

@@ -55,6 +55,16 @@ module.exports = app => {
     });
   });
 
+  app.post("/api/updateComfortFee/:userId", async (req, res) => {
+    const user = await User.findOne({ _id: req.params.userId });
+    user.comfortFee = req.body.comfortFee;
+    await user.save();
+    console.log(user);
+    return httpRespond.authRespond(res, {
+      status: true
+    });
+  });
+
   app.post("/api/add/service/:userId", async (req, res) => {
     const user = await User.findOne(
       { _id: req.params.userId },
