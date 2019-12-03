@@ -120,14 +120,15 @@ module.exports = app => {
         const response = await cloudinary.v2.uploader.upload(req.file.path, {
           resource_type: "video"
         });
-        console.log(response.url);
-        //  const user = await User.findOne({ _id: req.params.userId });
-        //  user.salesVideo = response.url;
-        // user.save();
+        //  console.log(response);
+        const user = await User.findOne({ _id: req.params.userId });
+        user.salesVideo = response.url;
+        user.save();
         return httpRespond.authRespond(res, {
           status: true,
           message: "upload complete",
-          video: response.url
+          video: response.url,
+          public_id: response.public_id
         });
       } catch (e) {
         console.log(e);
@@ -138,6 +139,16 @@ module.exports = app => {
       }
     }
   );
+
+  app.post("/auth/deleteVideo", async (req, res) => {
+    const response = await cloudinary.v2.uploader.destroy(req.body.videoId, {
+      resource_type: "video"
+    });
+    return httpRespond.authRespond(res, {
+      status: true,
+      message: "video deleted"
+    });
+  });
 
   app.post(
     "/auth/uploadLicense/:userId",
