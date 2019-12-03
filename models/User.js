@@ -37,7 +37,9 @@ let userSchema = new Schema({
       serviceDescription: { type: String, default: "" }
     }
   ],
-  comfortFee: { type: String, default: "" }
+  comfortFee: { type: String, default: "" },
+  stripeAccountId: { type: String, default: "" },
+  cardSource: { type: String, default: "" }
 });
 
 mongoose.model("users", userSchema);
