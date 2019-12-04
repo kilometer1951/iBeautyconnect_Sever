@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const User = mongoose.model("users");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const ip = require("ip");
 
 const password = require("../functions/password");
 const httpRespond = require("../functions/httpRespond");
@@ -22,6 +24,14 @@ cloudinary.config({
 });
 
 module.exports = app => {
+  // app.get("/auth/account", async (req, res) => {
+  //   // const account = await stripe.accounts.list();
+  //   // console.log(account);
+  //   // res.send(account);
+  //   const del = await stripe.accounts.del("acct_1FltcYDLBl8inzZa");
+  //   console.log(del);
+  // });
+
   app.post("/auth/verification", async (req, res) => {
     const code = Math.floor(Math.random() * 100) + 9000;
     //  send verification code
@@ -37,13 +47,35 @@ module.exports = app => {
         message: "user Exist"
       });
     }
+
+    //onbord the user for connect
+    const accountDetails = await stripe.accounts.create({
+      type: "custom",
+      country: "US",
+      business_type: "individual",
+      individual: {
+        first_name: req.body.fName,
+        last_name: req.body.lName,
+        phone: req.body.phone,
+        email: req.body.email
+      },
+      requested_capabilities: ["card_payments", "transfers"],
+      tos_acceptance: {
+        date: Math.floor(Date.now() / 1000),
+        ip: ip.address(),
+        user_agent: req.headers["user-agent"]
+      }
+    });
     const newUser = {
       fName: req.body.fName,
       lName: req.body.lName,
       phone: req.body.phone,
       email: req.body.email,
-      password: password.encryptPassword(req.body.password)
+      password: password.encryptPassword(req.body.password),
+      stripeAccountId: accountDetails.id
     };
+    //  console.log(accountDetails);
+
     const createdUser = await new User(newUser).save();
     return httpRespond.authRespond(res, {
       status: true,
@@ -163,6 +195,7 @@ module.exports = app => {
         user.businessAddress = req.body.businessAddress;
         user.profession = req.body.profession;
         user.ssnNumber = req.body.ssnNumber;
+        user.postalCode = req.body.postalCode;
         user.introScreen = true;
         user.licenseDocument = [
           {
@@ -173,6 +206,21 @@ module.exports = app => {
           }
         ];
         user.save();
+
+        //update stripe account and include last four of SSN
+        await stripe.accounts.update(user.stripeAccountId, {
+          individual: {
+            address: {
+              city: req.body.locationCity,
+              country: "US",
+              line1: req.body.businessAddres,
+              line2: null,
+              postal_code: req.body.postalCode,
+              state: req.body.locationState
+            }
+          }
+        });
+
         return httpRespond.authRespond(res, {
           status: true,
           message: "upload complete"

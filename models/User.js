@@ -16,6 +16,7 @@ let userSchema = new Schema({
   isActive: { type: Boolean, default: false },
   locationState: { type: String, default: "" },
   locationCity: { type: String, default: "" },
+  postalCode: { type: String, default: "" },
   businessAddress: { type: String, default: "" },
   ssnNumber: { type: String, default: "" },
   salesVideo: { type: String, default: "" },
@@ -39,7 +40,8 @@ let userSchema = new Schema({
   ],
   comfortFee: { type: String, default: "" },
   stripeAccountId: { type: String, default: "" },
-  cardSource: { type: String, default: "" }
+  cardToken: { type: String, default: "" },
+  bankToken: { type: String, default: "" }
 });
 
 mongoose.model("users", userSchema);
