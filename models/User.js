@@ -17,6 +17,7 @@ let userSchema = new Schema({
   locationState: { type: String, default: "" },
   locationCity: { type: String, default: "" },
   postalCode: { type: String, default: "" },
+  addressLine1: { type: String, default: "" },
   businessAddress: { type: String, default: "" },
   ssnNumber: { type: String, default: "" },
   salesVideo: { type: String, default: "" },

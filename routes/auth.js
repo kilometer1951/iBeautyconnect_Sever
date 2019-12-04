@@ -196,6 +196,7 @@ module.exports = app => {
         user.profession = req.body.profession;
         user.ssnNumber = req.body.ssnNumber;
         user.postalCode = req.body.postalCode;
+        user.addressLine1 = req.body.addressLine1;
         user.introScreen = true;
         user.licenseDocument = [
           {
@@ -213,7 +214,7 @@ module.exports = app => {
             address: {
               city: req.body.locationCity,
               country: "US",
-              line1: req.body.businessAddres,
+              line1: req.body.addressLine1,
               line2: null,
               postal_code: req.body.postalCode,
               state: req.body.locationState
