@@ -24,6 +24,12 @@ cloudinary.config({
 
 module.exports = app => {
   app.get("/auth/account", async (req, res) => {
+    // const sa = await stripe.accounts.update("acct_1FmUU4IqLHq8v6zL", {
+    //   individual: { id_number: "624897317" }
+    // });
+    //  console.log(sa);
+    // const ac = await stripe.accounts.list();
+    // res.send(ac);
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
