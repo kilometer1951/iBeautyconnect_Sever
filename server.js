@@ -29,6 +29,7 @@ mongoose.connect(
 
 require("./routes/auth")(app);
 require("./routes/api")(app);
+require("./routes/adminApi")(app);
 
 const port = process.env.PORT || 5002;
 app.listen(port, () => {

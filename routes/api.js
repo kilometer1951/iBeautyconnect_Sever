@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 const Profession = mongoose.model("professions");
 const User = mongoose.model("users");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const ip = require("ip");
+
 const httpRespond = require("../functions/httpRespond");
 
 module.exports = app => {
@@ -48,8 +51,33 @@ module.exports = app => {
 
   app.post("/api/updateBusinessAddress/:userId", async (req, res) => {
     const user = await User.findOne({ _id: req.params.userId });
-    user.businessAddress = req.body.businessAddress;
+    user.completeBusinessAddress = req.body.businessAddress;
+    user.businessAddressLine1 = req.body.businessAddressLine1;
+    user.businessCity = req.body.businessCity;
+    user.businessState = req.body.businessState;
+    user.businessPostalCode = req.body.businessPostal;
+
+    //update stripe account and include last four of SSN
+    await stripe.accounts.update(user.stripeAccountId, {
+      individual: {
+        address: {
+          city: req.body.businessCity,
+          country: "US",
+          line1: req.body.businessAddressLine1,
+          line2: null,
+          postal_code: req.body.businessPostal,
+          state: req.body.businessState
+        }
+      },
+      tos_acceptance: {
+        date: Math.floor(Date.now() / 1000),
+        ip: ip.address(),
+        user_agent: req.headers["user-agent"]
+      }
+    });
+
     await user.save();
+
     return httpRespond.authRespond(res, {
       status: true
     });
@@ -57,7 +85,7 @@ module.exports = app => {
 
   app.post("/api/updateComfortFee/:userId", async (req, res) => {
     const user = await User.findOne({ _id: req.params.userId });
-    user.comfortFee = req.body.comfortFee;
+    user.comfortFee = req.body.comfortFeeInput;
     await user.save();
     console.log(user);
     return httpRespond.authRespond(res, {

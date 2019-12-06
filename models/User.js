@@ -13,12 +13,15 @@ let userSchema = new Schema({
   introScreen: { type: Boolean, default: false },
   profession: { type: String, default: "" },
   online: { type: Boolean, default: false },
-  isActive: { type: Boolean, default: false },
+  isApproved: { type: Boolean, default: false },
+  isApprovedNote: { type: String, default: "pending approval" },
   locationState: { type: String, default: "" },
   locationCity: { type: String, default: "" },
-  postalCode: { type: String, default: "" },
-  addressLine1: { type: String, default: "" },
-  businessAddress: { type: String, default: "" },
+  completeBusinessAddress: { type: String, default: "" },
+  businessAddressLine1: { type: String, default: "" },
+  businessState: { type: String, default: "" },
+  businessCity: { type: String, default: "" },
+  businessPostalCode: { type: String, default: "" },
   ssnNumber: { type: String, default: "" },
   salesVideo: { type: String, default: "" },
   licenseDocument: [
@@ -41,8 +44,14 @@ let userSchema = new Schema({
   ],
   comfortFee: { type: String, default: "" },
   stripeAccountId: { type: String, default: "" },
-  cardToken: { type: String, default: "" },
-  bankToken: { type: String, default: "" }
+  cardId: { type: String, default: "" },
+  bankId: { type: String, default: "" },
+  isDeactivated: { type: Boolean, default: false },
+  isDeactivatedNote: { type: String, default: "" },
+  debitCardLastFour: { type: String, default: "" },
+  deactivationNote: "",
+  staffHandler: String,
+  dob: { type: Date, default: Date.now }
 });
 
 mongoose.model("users", userSchema);

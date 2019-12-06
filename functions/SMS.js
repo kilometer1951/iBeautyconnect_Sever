@@ -20,7 +20,7 @@ smsFunctions.verification = async (req, res, phone, messageBody, code) => {
   );
 };
 
-smsFunctions.sendGreeting = async (req, res, phoneNumber, messageBody) => {
+smsFunctions.sendSMS = async (req, res, phoneNumber, messageBody) => {
   client.messages.create({
     to: "+1" + phoneNumber,
     from: "+17739749268",
