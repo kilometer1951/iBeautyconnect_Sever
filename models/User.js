@@ -12,7 +12,7 @@ let userSchema = new Schema({
   hasGoneThroughFinalScreen: { type: Boolean, default: false },
   introScreen: { type: Boolean, default: false },
   profession: { type: String, default: "" },
-  online: { type: Boolean, default: false },
+  liveRequest: { type: Boolean, default: false },
   isApproved: { type: Boolean, default: false },
   isApprovedNote: { type: String, default: "pending approval" },
   locationState: { type: String, default: "" },
@@ -49,6 +49,7 @@ let userSchema = new Schema({
   isDeactivated: { type: Boolean, default: false },
   isDeactivatedNote: { type: String, default: "" },
   debitCardLastFour: { type: String, default: "" },
+  bankLastFour: { type: String, default: "" },
   deactivationNote: "",
   staffHandler: String,
   dob: { type: Date, default: Date.now }

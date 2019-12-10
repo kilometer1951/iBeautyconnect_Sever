@@ -24,16 +24,16 @@ cloudinary.config({
 
 module.exports = app => {
   app.get("/auth/account", async (req, res) => {
-    // const sa = await stripe.accounts.update("acct_1FmUU4IqLHq8v6zL", {
+    // const sa = await stripe.accounts.update("acct_1FmV8SKALHyUPxgI", {
     //   individual: { id_number: "624897317" }
     // });
-    //  console.log(sa);
+    // console.log(sa);
     // const ac = await stripe.accounts.list();
     // res.send(ac);
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
-    // const del = await stripe.accounts.del("acct_1FmSy1EX0UIDVZcM");
+    // const del = await stripe.accounts.del("acct_1Fms1RFRPtJ9zrXh");
     // console.log(del);
     // stripe.accounts.retrieveExternalAccount(
     //   "acct_1FmQD2EWMyi6h2Gs",
@@ -122,6 +122,8 @@ module.exports = app => {
         completeBusinessAddress: 1,
         cardId: 1,
         debitCardLastFour: 1,
+        bankLastFour: 1,
+        bankId: 1,
         dob: 1
       }
     );
@@ -189,46 +191,73 @@ module.exports = app => {
     });
   });
 
-  app.post(
-    "/auth/add_Update_debitCard_to_connect_account",
-    async (req, res) => {
-      const user = await User.findOne({ _id: req.body.userId });
-      const newDob = req.body.dob.split("/");
-      const ssnSplit = user.ssnNumber.split("");
+  app.post("/auth/add_debit_card", async (req, res) => {
+    const user = await User.findOne({ _id: req.body.userId });
+    const newDob = req.body.dob.split("/");
+    const ssnSplit = user.ssnNumber.split("");
 
-      let stripeAccount;
-      if (user.cardId === "") {
-        //add card to account and update DOB
-        try {
-          stripeAccount = await stripe.accounts.createExternalAccount(
-            user.stripeAccountId,
-            {
-              external_account: req.body.token.tokenId
-            }
-          );
-          await stripe.accounts.update(user.stripeAccountId, {
-            individual: {
-              dob: {
-                day: parseInt(newDob[1].trim(""), 10),
-                month: parseInt(newDob[0].trim(""), 10),
-                year: parseInt(newDob[2].trim(""), 10)
-              }
-            }
-          });
-          console.log(stripeAccount);
-        } catch (e) {
-          console.log(e);
+    let stripeAccount;
+    //add card to account and update DOB
+    try {
+      stripeAccount = await stripe.accounts.createExternalAccount(
+        user.stripeAccountId,
+        {
+          external_account: req.body.token.tokenId
         }
-      }
-      user.dob = req.body.dob;
-      user.debitCardLastFour = stripeAccount.last4;
-      user.cardId = stripeAccount.id;
-      user.save();
-      return httpRespond.authRespond(res, {
-        status: true
+      );
+      await stripe.accounts.update(user.stripeAccountId, {
+        individual: {
+          dob: {
+            day: parseInt(newDob[1].trim(""), 10),
+            month: parseInt(newDob[0].trim(""), 10),
+            year: parseInt(newDob[2].trim(""), 10)
+          }
+        }
       });
+    } catch (e) {
+      console.log(e);
     }
-  );
+    user.dob = req.body.dob;
+    user.debitCardLastFour = stripeAccount.last4;
+    user.cardId = stripeAccount.id;
+    user.save();
+    return httpRespond.authRespond(res, {
+      status: true
+    });
+  });
+
+  app.post("/auth/add_bank_account_info", async (req, res) => {
+    const user = await User.findOne({ _id: req.body.userId });
+
+    let stripeAccount;
+    //add bank to account and update DOB
+    try {
+      stripeAccount = await stripe.accounts.createExternalAccount(
+        user.stripeAccountId,
+        {
+          external_account: req.body.bankAccountToken
+        }
+      );
+    } catch (e) {
+      console.log(e);
+    }
+    user.bankLastFour = stripeAccount.last4;
+    user.bankId = stripeAccount.id;
+    user.hasGoneThroughFinalScreen = true;
+    user.save();
+    return httpRespond.authRespond(res, {
+      status: true
+    });
+  });
+
+  app.post("/auth/hasGoneThroughFinalScreen", async (req, res) => {
+    const user = await User.findOne({ _id: req.body.userId });
+    user.hasGoneThroughFinalScreen = true;
+    user.save();
+    return httpRespond.authRespond(res, {
+      status: true
+    });
+  });
 
   app.post(
     "/auth/uploadLicense/:userId",

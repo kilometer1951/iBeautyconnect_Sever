@@ -33,11 +33,12 @@ module.exports = app => {
           last_name: user.lName,
           phone: user.phone,
           email: user.email,
-          ssn_last_4: lastFour
+          ssn_last_4: lastFour,
+          id_number: user.ssnNumber
         },
         business_profile: {
           mcc: "7230",
-          name: "ibeautyconnect",
+          name: `${user.fName} ${user.lName}`,
           product_description:
             "I sell my beauty services on iBeautyConnect." + user.profession,
           support_email: "ibeautyconnect2019@gmail.com",
