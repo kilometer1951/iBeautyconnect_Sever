@@ -49,39 +49,39 @@ module.exports = app => {
     });
   });
 
-  app.post("/api/updateBusinessAddress/:userId", async (req, res) => {
-    const user = await User.findOne({ _id: req.params.userId });
-    user.completeBusinessAddress = req.body.businessAddress;
-    user.businessAddressLine1 = req.body.businessAddressLine1;
-    user.businessCity = req.body.businessCity;
-    user.businessState = req.body.businessState;
-    user.businessPostalCode = req.body.businessPostal;
-
-    //update stripe account and include last four of SSN
-    await stripe.accounts.update(user.stripeAccountId, {
-      individual: {
-        address: {
-          city: req.body.businessCity,
-          country: "US",
-          line1: req.body.businessAddressLine1,
-          line2: null,
-          postal_code: req.body.businessPostal,
-          state: req.body.businessState
-        }
-      },
-      tos_acceptance: {
-        date: Math.floor(Date.now() / 1000),
-        ip: ip.address(),
-        user_agent: req.headers["user-agent"]
-      }
-    });
-
-    await user.save();
-
-    return httpRespond.authRespond(res, {
-      status: true
-    });
-  });
+  // app.post("/api/updateBusinessAddress/:userId", async (req, res) => {
+  //   const user = await User.findOne({ _id: req.params.userId });
+  //   user.completeBusinessAddress = req.body.businessAddress;
+  //   user.businessAddressLine1 = req.body.businessAddressLine1;
+  //   user.businessCity = req.body.businessCity;
+  //   user.businessState = req.body.businessState;
+  //   user.businessPostalCode = req.body.businessPostal;
+  //
+  //   //update stripe account and include last four of SSN
+  //   await stripe.accounts.update(user.stripeAccountId, {
+  //     individual: {
+  //       address: {
+  //         city: req.body.businessCity,
+  //         country: "US",
+  //         line1: req.body.businessAddressLine1,
+  //         line2: null,
+  //         postal_code: req.body.businessPostal,
+  //         state: req.body.businessState
+  //       }
+  //     },
+  //     tos_acceptance: {
+  //       date: Math.floor(Date.now() / 1000),
+  //       ip: ip.address(),
+  //       user_agent: req.headers["user-agent"]
+  //     }
+  //   });
+  //
+  //   await user.save();
+  //
+  //   return httpRespond.authRespond(res, {
+  //     status: true
+  //   });
+  // });
 
   app.post("/api/updateComfortFee/:userId", async (req, res) => {
     const user = await User.findOne({ _id: req.params.userId });

@@ -17,11 +17,8 @@ let userSchema = new Schema({
   isApprovedNote: { type: String, default: "pending approval" },
   locationState: { type: String, default: "" },
   locationCity: { type: String, default: "" },
-  completeBusinessAddress: { type: String, default: "" },
-  businessAddressLine1: { type: String, default: "" },
-  businessState: { type: String, default: "" },
-  businessCity: { type: String, default: "" },
-  businessPostalCode: { type: String, default: "" },
+  address: { type: String, default: "" },
+  postal_code: { type: String, default: "" },
   ssnNumber: { type: String, default: "" },
   salesVideo: { type: String, default: "" },
   licenseDocument: [
@@ -52,7 +49,8 @@ let userSchema = new Schema({
   bankLastFour: { type: String, default: "" },
   deactivationNote: "",
   staffHandler: String,
-  dob: { type: Date, default: Date.now }
+  dob: { type: Date, default: Date.now },
+  service_gender: { type: String, default: "" }
 });
 
 mongoose.model("users", userSchema);

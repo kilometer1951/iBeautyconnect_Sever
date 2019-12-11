@@ -34,8 +34,17 @@ module.exports = app => {
           phone: user.phone,
           email: user.email,
           ssn_last_4: lastFour,
-          id_number: user.ssnNumber
+          id_number: user.ssnNumber,
+          address: {
+            city: req.body.locationCity,
+            country: "US",
+            line1: req.body.address,
+            line2: null,
+            postal_code: req.body.postal_code,
+            state: req.body.locationState
+          }
         },
+
         business_profile: {
           mcc: "7230",
           name: `${user.fName} ${user.lName}`,

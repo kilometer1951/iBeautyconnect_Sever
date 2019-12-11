@@ -267,9 +267,10 @@ module.exports = app => {
         const response = await cloudinary.uploader.upload(req.file.path);
         const user = await User.findOne({ _id: req.params.userId });
 
+        user.gender = req.body.gender;
         user.locationState = req.body.locationState;
         user.locationCity = req.body.locationCity;
-        user.completeBusinessAddress = req.body.businessAddress;
+        user.address = req.body.address;
         user.profession = req.body.profession;
         user.ssnNumber = req.body.ssnNumber;
         user.introScreen = true;
