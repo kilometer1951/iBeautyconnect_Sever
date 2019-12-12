@@ -270,6 +270,7 @@ module.exports = app => {
         user.gender = req.body.gender;
         user.locationState = req.body.locationState;
         user.locationCity = req.body.locationCity;
+        user.postal_code = req.body.postalCode;
         user.address = req.body.address;
         user.profession = req.body.profession;
         user.ssnNumber = req.body.ssnNumber;
