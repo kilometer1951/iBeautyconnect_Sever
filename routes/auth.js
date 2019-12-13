@@ -33,7 +33,7 @@ module.exports = app => {
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
-    // const del = await stripe.accounts.del("acct_1Fms1RFRPtJ9zrXh");
+    // const del = await stripe.accounts.del("acct_1Fp2MxH0QmtLHPu4");
     // console.log(del);
     // stripe.accounts.retrieveExternalAccount(
     //   "acct_1FmQD2EWMyi6h2Gs",
@@ -214,16 +214,20 @@ module.exports = app => {
           }
         }
       });
+      user.dob = req.body.dob;
+      user.debitCardLastFour = stripeAccount.last4;
+      user.cardId = stripeAccount.id;
+      user.save();
+      return httpRespond.authRespond(res, {
+        status: true
+      });
     } catch (e) {
       console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e.raw.message
+      });
     }
-    user.dob = req.body.dob;
-    user.debitCardLastFour = stripeAccount.last4;
-    user.cardId = stripeAccount.id;
-    user.save();
-    return httpRespond.authRespond(res, {
-      status: true
-    });
   });
 
   app.post("/auth/add_bank_account_info", async (req, res) => {
@@ -238,16 +242,20 @@ module.exports = app => {
           external_account: req.body.bankAccountToken
         }
       );
+      user.bankLastFour = stripeAccount.last4;
+      user.bankId = stripeAccount.id;
+      user.hasGoneThroughFinalScreen = true;
+      user.save();
+      return httpRespond.authRespond(res, {
+        status: true
+      });
     } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e.raw.message
+      });
       console.log(e);
     }
-    user.bankLastFour = stripeAccount.last4;
-    user.bankId = stripeAccount.id;
-    user.hasGoneThroughFinalScreen = true;
-    user.save();
-    return httpRespond.authRespond(res, {
-      status: true
-    });
   });
 
   app.post("/auth/hasGoneThroughFinalScreen", async (req, res) => {
@@ -267,7 +275,7 @@ module.exports = app => {
         const response = await cloudinary.uploader.upload(req.file.path);
         const user = await User.findOne({ _id: req.params.userId });
 
-        user.gender = req.body.gender;
+        user.service_gender = req.body.gender;
         user.locationState = req.body.locationState;
         user.locationCity = req.body.locationCity;
         user.postal_code = req.body.postalCode;
