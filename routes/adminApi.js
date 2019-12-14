@@ -63,7 +63,7 @@ module.exports = app => {
       user.staffHandler = req.params.staffName;
 
       //send the partner a welcome messsage
-      messageBody = `Congratulation on your approval ${user.fName}. Welcome to the iBeautyConnect family. We are here for you. Open the iBeautyConnect app to get started https://ibeautyconnect/ff/dhdh`;
+      messageBody = `Congratulation on your approval ${user.fName}. Welcome to the iBeautyConnect family. We are here for you. Open the iBeautyConnect app to get started iBeautyConnectPartner://get_started`;
       smsFunctions.sendSMS(req, res, user.phone, messageBody);
       await user.save();
       return httpRespond.authRespond(res, {
