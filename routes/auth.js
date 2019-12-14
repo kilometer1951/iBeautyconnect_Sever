@@ -37,7 +37,7 @@ module.exports = app => {
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
-    // const del = await stripe.accounts.del("acct_1FpJruFj6rHFp3zZ");
+    // const del = await stripe.accounts.del("acct_1FpPCUIIsZwmjocD");
     // console.log(del);
     // stripe.accounts.retrieveExternalAccount(
     //   "acct_1FmQD2EWMyi6h2Gs",
@@ -132,6 +132,36 @@ module.exports = app => {
       }
     );
     return res.send(userFound);
+  });
+
+  app.post("/auth/service_gender/:userId", async (req, res) => {
+    const user = await User.findOne({ _id: req.params.userId });
+    user.service_gender = req.body.service_gender;
+    user.save();
+    return httpRespond.authRespond(res, {
+      status: true
+    });
+  });
+
+  app.post("/auth/profession/:userId", async (req, res) => {
+    const user = await User.findOne({ _id: req.params.userId });
+    user.profession = req.body.profession;
+    user.save();
+    return httpRespond.authRespond(res, {
+      status: true
+    });
+  });
+
+  app.post("/auth/user_location/:userId", async (req, res) => {
+    const user = await User.findOne({ _id: req.params.userId });
+    user.locationState = req.body.locationState;
+    user.locationCity = req.body.locationCity;
+    user.postal_code = req.body.postalCode;
+    user.address = req.body.address;
+    user.save();
+    return httpRespond.authRespond(res, {
+      status: true
+    });
   });
 
   app.post(
@@ -283,23 +313,8 @@ module.exports = app => {
       try {
         const response = await cloudinary.uploader.upload(req.file.path);
         const user = await User.findOne({ _id: req.params.userId });
+        user.licenseDocument[0].path = response.url;
 
-        user.service_gender = req.body.gender;
-        user.locationState = req.body.locationState;
-        user.locationCity = req.body.locationCity;
-        user.postal_code = req.body.postalCode;
-        user.address = req.body.address;
-        user.profession = req.body.profession;
-        user.ssnNumber = req.body.ssnNumber;
-        user.introScreen = true;
-        user.licenseDocument = [
-          {
-            licenseNumber: req.body.licenseNumber,
-            path: response.url,
-            issuedState: req.body.issuedState,
-            expirationDate: req.body.licenseExpirationDate
-          }
-        ];
         user.save();
         return httpRespond.authRespond(res, {
           status: true,
@@ -314,4 +329,27 @@ module.exports = app => {
       }
     }
   );
+
+  app.post("/auth/uploadDocuments/:userId", async (req, res) => {
+    try {
+      const user = await User.findOne({ _id: req.params.userId });
+      user.ssnNumber = req.body.ssnNumber;
+      user.introScreen = true;
+      user.licenseDocument[0].licenseNumber = req.body.licenseNumber;
+      user.licenseDocument[0].issuedState = req.body.issuedState;
+      user.licenseDocument[0].expirationDate = req.body.licenseExpirationDate;
+
+      user.save();
+      return httpRespond.authRespond(res, {
+        status: true,
+        message: "complete"
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
 };
