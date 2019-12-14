@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const User = mongoose.model("users");
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const ip = require("ip");
 
 const password = require("../functions/password");
 const httpRespond = require("../functions/httpRespond");
@@ -13,7 +14,10 @@ const storage = multer.diskStorage({
     callback(null, Date.now() + file.originalname);
   }
 });
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fieldSize: 25 * 1024 * 1024 }
+});
 
 const cloudinary = require("cloudinary");
 cloudinary.config({
@@ -33,7 +37,7 @@ module.exports = app => {
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
-    // const del = await stripe.accounts.del("acct_1Fp2MxH0QmtLHPu4");
+    // const del = await stripe.accounts.del("acct_1FpJruFj6rHFp3zZ");
     // console.log(del);
     // stripe.accounts.retrieveExternalAccount(
     //   "acct_1FmQD2EWMyi6h2Gs",
@@ -212,6 +216,11 @@ module.exports = app => {
             month: parseInt(newDob[0].trim(""), 10),
             year: parseInt(newDob[2].trim(""), 10)
           }
+        },
+        tos_acceptance: {
+          date: Math.floor(Date.now() / 1000),
+          ip: ip.address(),
+          user_agent: req.headers["user-agent"]
         }
       });
       user.dob = req.body.dob;
@@ -250,11 +259,11 @@ module.exports = app => {
         status: true
       });
     } catch (e) {
+      console.log(e);
       return httpRespond.authRespond(res, {
         status: false,
         message: e.raw.message
       });
-      console.log(e);
     }
   });
 
@@ -292,7 +301,6 @@ module.exports = app => {
           }
         ];
         user.save();
-
         return httpRespond.authRespond(res, {
           status: true,
           message: "upload complete"
