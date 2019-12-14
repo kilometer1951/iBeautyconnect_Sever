@@ -81,7 +81,17 @@ module.exports = app => {
       lName: req.body.lName,
       phone: req.body.phone,
       email: req.body.email,
-      password: password.encryptPassword(req.body.password)
+      password: password.encryptPassword(req.body.password),
+      licenseDocument: [
+        {
+          licenseNumber: "",
+          path: "",
+          approved: false,
+          needsAttention: false,
+          issuedState: "",
+          expirationDate: Date()
+        }
+      ]
     };
 
     const createdUser = await new User(newUser).save();
