@@ -8,6 +8,8 @@ const config = require("./config/secret");
 //models
 require("./models/User");
 require("./models/Profession");
+require("./models/Image");
+require("./models/Video");
 
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: true }));
