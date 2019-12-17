@@ -111,6 +111,12 @@ module.exports = app => {
     const images = await Image.find({ belongsTo: req.params.userId })
       .limit(pagination.limit)
       .skip(pagination.skip);
+    if (images.length === 0) {
+      return httpRespond.authRespond(res, {
+        status: true,
+        message: "endOfFile"
+      });
+    }
 
     return httpRespond.authRespond(res, {
       status: true,
