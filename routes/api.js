@@ -102,7 +102,16 @@ module.exports = app => {
   // });
 
   app.get("/api/images/:userId", async (req, res) => {
-    const images = await Image.find({ belongsTo: req.params.userId });
+    const per_page = 10;
+    let page_no = parseInt(req.query.page);
+    let pagination = {
+      limit: per_page,
+      skip: per_page * (page_no - 1)
+    };
+    const images = await Image.find({ belongsTo: req.params.userId })
+      .limit(pagination.limit)
+      .skip(pagination.skip);
+
     return httpRespond.authRespond(res, {
       status: true,
       images
