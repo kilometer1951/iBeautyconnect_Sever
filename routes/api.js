@@ -101,6 +101,14 @@ module.exports = app => {
   //   });
   // });
 
+  app.get("/api/images/:userId", async (req, res) => {
+    const images = await Image.find({ belongsTo: req.params.userId });
+    return httpRespond.authRespond(res, {
+      status: true,
+      images
+    });
+  });
+
   app.post("/api/updateComfortFee/:userId", async (req, res) => {
     const user = await User.findOne({ _id: req.params.userId });
     user.comfortFee = req.body.comfortFeeInput;
@@ -174,7 +182,7 @@ module.exports = app => {
         imageApproval: true
       };
       const image = await new Image(newImage).save();
-
+      console.log(image);
       return httpRespond.authRespond(res, {
         status: true,
         image
