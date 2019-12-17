@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 let userSchema = new Schema({
+  date_joined: { type: Date, default: Date.now },
   fName: String,
   lName: String,
   phone: String,
