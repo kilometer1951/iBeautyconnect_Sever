@@ -80,23 +80,35 @@ module.exports = app => {
   });
 
   app.get("/api/images/:userId", async (req, res) => {
+    //const count = await Image.find({ belongsTo: req.params.userId }).count();
     const per_page = 10;
     let page_no = parseInt(req.query.page);
-    let pagination = {
-      limit: per_page,
-      skip: per_page * (page_no - 1)
-    };
-    const images = await Image.find({ belongsTo: req.params.userId })
-      .limit(pagination.limit)
-      .skip(pagination.skip);
-    if (images.length === 0) {
-      return httpRespond.authRespond(res, {
-        status: true,
-        message: "endOfFile",
-        images
-      });
-    }
-    //console.log(images);
+
+    // if (page_no === 1 && count === 10) {
+    //   const images = await Image.find({ belongsTo: req.params.userId }).limit(
+    //     10
+    //   );
+    //   return httpRespond.authRespond(res, {
+    //     status: true,
+    //     images
+    //   });
+    // }
+
+    // let pagination = {
+    //   limit: per_page,
+    //   skip: per_page * (page_no - 1)
+    // };
+    const images = await Image.find({ belongsTo: req.params.userId });
+
+    //
+    // if (images.length === 0) {
+    //   return httpRespond.authRespond(res, {
+    //     status: true,
+    //     message: "endOfFile",
+    //     images
+    //   });
+    // }
+    // //console.log(images);
 
     return httpRespond.authRespond(res, {
       status: true,
