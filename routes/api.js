@@ -67,39 +67,17 @@ module.exports = app => {
     });
   });
 
-  // app.post("/api/updateBusinessAddress/:userId", async (req, res) => {
-  //   const user = await User.findOne({ _id: req.params.userId });
-  //   user.completeBusinessAddress = req.body.businessAddress;
-  //   user.businessAddressLine1 = req.body.businessAddressLine1;
-  //   user.businessCity = req.body.businessCity;
-  //   user.businessState = req.body.businessState;
-  //   user.businessPostalCode = req.body.businessPostal;
-  //
-  //   //update stripe account and include last four of SSN
-  //   await stripe.accounts.update(user.stripeAccountId, {
-  //     individual: {
-  //       address: {
-  //         city: req.body.businessCity,
-  //         country: "US",
-  //         line1: req.body.businessAddressLine1,
-  //         line2: null,
-  //         postal_code: req.body.businessPostal,
-  //         state: req.body.businessState
-  //       }
-  //     },
-  //     tos_acceptance: {
-  //       date: Math.floor(Date.now() / 1000),
-  //       ip: ip.address(),
-  //       user_agent: req.headers["user-agent"]
-  //     }
-  //   });
-  //
-  //   await user.save();
-  //
-  //   return httpRespond.authRespond(res, {
-  //     status: true
-  //   });
-  // });
+  app.post("/api/delete_image", async (req, res) => {
+    const image = await Image.find({ _id: req.body.imageId });
+    await Image.deleteOne({ _id: req.body.imageId });
+    //delete from cloudinary
+    await cloudinary.v2.uploader.destroy(image.cloudinaryId, {
+      resource_type: "video"
+    });
+    return httpRespond.authRespond(res, {
+      status: true
+    });
+  });
 
   app.get("/api/images/:userId", async (req, res) => {
     const per_page = 10;
@@ -114,9 +92,11 @@ module.exports = app => {
     if (images.length === 0) {
       return httpRespond.authRespond(res, {
         status: true,
-        message: "endOfFile"
+        message: "endOfFile",
+        images
       });
     }
+    //console.log(images);
 
     return httpRespond.authRespond(res, {
       status: true,
@@ -194,7 +174,8 @@ module.exports = app => {
       const newImage = {
         belongsTo: req.params.userId,
         path: response.url,
-        imageApproval: true
+        imageApproval: true,
+        cloudinaryId: response.public_id
       };
       const image = await new Image(newImage).save();
       console.log(image);
@@ -215,7 +196,8 @@ module.exports = app => {
       const newVideo = {
         belongsTo: req.params.userId,
         path: response.url,
-        videoApproval: true
+        videoApproval: true,
+        cloudinaryId: response.public_id
       };
       const video = await new Video(newVideo).save();
       return httpRespond.authRespond(res, {

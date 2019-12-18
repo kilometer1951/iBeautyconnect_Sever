@@ -4,6 +4,8 @@ const { Schema } = mongoose;
 const videoSchema = new Schema({
   belongsTo: { type: Schema.Types.ObjectId, ref: "users" },
   path: String,
-  videoApproval: { type: Boolean, default: true }
+  videoApproval: { type: Boolean, default: true },
+  cloudinaryId: String,
+  date_uploaded: { type: Date, default: Date.now }
 });
 mongoose.model("videos", videoSchema);
