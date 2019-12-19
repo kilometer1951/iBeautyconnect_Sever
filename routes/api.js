@@ -68,10 +68,21 @@ module.exports = app => {
   });
 
   app.post("/api/delete_image", async (req, res) => {
-    const image = await Image.find({ _id: req.body.imageId });
+    const image = await Image.findOne({ _id: req.body.imageId });
     await Image.deleteOne({ _id: req.body.imageId });
     //delete from cloudinary
-    await cloudinary.v2.uploader.destroy(image.cloudinaryId, {
+    await cloudinary.v2.uploader.destroy(image.cloudinaryId);
+
+    return httpRespond.authRespond(res, {
+      status: true
+    });
+  });
+
+  app.post("/api/delete_video", async (req, res) => {
+    const video = await Video.findOne({ _id: req.body.videoId });
+    await Video.deleteOne({ _id: req.body.videoId });
+    //  delete from cloudinary
+    await cloudinary.v2.uploader.destroy(video.cloudinaryId, {
       resource_type: "video"
     });
     return httpRespond.authRespond(res, {
@@ -81,8 +92,8 @@ module.exports = app => {
 
   app.get("/api/images/:userId", async (req, res) => {
     //const count = await Image.find({ belongsTo: req.params.userId }).count();
-    const per_page = 10;
-    let page_no = parseInt(req.query.page);
+    // const per_page = 10;
+    // let page_no = parseInt(req.query.page);
 
     // if (page_no === 1 && count === 10) {
     //   const images = await Image.find({ belongsTo: req.params.userId }).limit(
@@ -113,6 +124,15 @@ module.exports = app => {
     return httpRespond.authRespond(res, {
       status: true,
       images
+    });
+  });
+
+  app.get("/api/videos/:userId", async (req, res) => {
+    const videos = await Video.find({ belongsTo: req.params.userId });
+    console.log(videos);
+    return httpRespond.authRespond(res, {
+      status: true,
+      videos
     });
   });
 
