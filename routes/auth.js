@@ -125,22 +125,7 @@ module.exports = app => {
   });
 
   app.get("/auth/userIsActive/:userId", async (req, res) => {
-    const userFound = await User.findOne(
-      { _id: req.params.userId },
-      {
-        isApproved: 1,
-        hasGoneThroughFinalScreen: 1,
-        introScreen: 1,
-        fName: 1,
-        lName: 1,
-        completeBusinessAddress: 1,
-        cardId: 1,
-        debitCardLastFour: 1,
-        bankLastFour: 1,
-        bankId: 1,
-        dob: 1
-      }
-    );
+    const userFound = await User.findOne({ _id: req.params.userId });
     return res.send(userFound);
   });
 
