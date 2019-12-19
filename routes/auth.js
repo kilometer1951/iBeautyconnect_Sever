@@ -37,7 +37,7 @@ module.exports = app => {
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
-    // const del = await stripe.accounts.del("acct_1FplPHIjGCoodxDx");
+    // const del = await stripe.accounts.del("acct_1FrEPcJOBpOcwPOy");
     // console.log(del);
     // stripe.accounts.retrieveExternalAccount(
     //   "acct_1FmQD2EWMyi6h2Gs",
@@ -125,7 +125,24 @@ module.exports = app => {
   });
 
   app.get("/auth/userIsActive/:userId", async (req, res) => {
-    const userFound = await User.findOne({ _id: req.params.userId });
+    const userFound = await User.findOne(
+      { _id: req.params.userId },
+      {
+        isApproved: 1,
+        hasGoneThroughFinalScreen: 1,
+        introScreen: 1,
+        fName: 1,
+        lName: 1,
+        completeBusinessAddress: 1,
+        cardId: 1,
+        debitCardLastFour: 1,
+        bankLastFour: 1,
+        bankId: 1,
+        dob: 1,
+        profilePhoto: 1,
+        profession: 1
+      }
+    );
     return res.send(userFound);
   });
 
