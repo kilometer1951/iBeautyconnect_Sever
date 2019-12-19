@@ -210,4 +210,13 @@ module.exports = app => {
       });
     }
   );
+
+  app.post("/api/online_status", async (req, res) => {
+    //check if account is isActivated before going online
+    const user = await User.findOne({ _id: req.body.userId });
+    //  console.log(user);
+    user.liveRequest = !user.liveRequest;
+    user.save();
+    return res.send({ success: true });
+  });
 };

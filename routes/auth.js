@@ -37,7 +37,7 @@ module.exports = app => {
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
-    // const del = await stripe.accounts.del("acct_1FrEPcJOBpOcwPOy");
+    // const del = await stripe.accounts.del("acct_1FrEaZEyoT2eoyJ9");
     // console.log(del);
     // stripe.accounts.retrieveExternalAccount(
     //   "acct_1FmQD2EWMyi6h2Gs",
@@ -140,7 +140,8 @@ module.exports = app => {
         bankId: 1,
         dob: 1,
         profilePhoto: 1,
-        profession: 1
+        profession: 1,
+        liveRequest: 1
       }
     );
     return res.send(userFound);
