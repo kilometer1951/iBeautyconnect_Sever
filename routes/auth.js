@@ -37,7 +37,7 @@ module.exports = app => {
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
-    // const del = await stripe.accounts.del("acct_1Fpj2fH6yxblf1Oo");
+    // const del = await stripe.accounts.del("acct_1FplPHIjGCoodxDx");
     // console.log(del);
     // stripe.accounts.retrieveExternalAccount(
     //   "acct_1FmQD2EWMyi6h2Gs",

@@ -60,6 +60,24 @@ module.exports = app => {
     });
   });
 
+  app.get("/api/images/:userId", async (req, res) => {
+    const images = await Image.find({ belongsTo: req.params.userId });
+
+    return httpRespond.authRespond(res, {
+      status: true,
+      images
+    });
+  });
+
+  app.get("/api/videos/:userId", async (req, res) => {
+    const videos = await Video.find({ belongsTo: req.params.userId });
+    console.log(videos);
+    return httpRespond.authRespond(res, {
+      status: true,
+      videos
+    });
+  });
+
   app.post("/api/profession", async (req, res) => {
     const profession = await new Profession({ name: req.body.name }).save();
     return httpRespond.authRespond(res, {
@@ -87,52 +105,6 @@ module.exports = app => {
     });
     return httpRespond.authRespond(res, {
       status: true
-    });
-  });
-
-  app.get("/api/images/:userId", async (req, res) => {
-    //const count = await Image.find({ belongsTo: req.params.userId }).count();
-    // const per_page = 10;
-    // let page_no = parseInt(req.query.page);
-
-    // if (page_no === 1 && count === 10) {
-    //   const images = await Image.find({ belongsTo: req.params.userId }).limit(
-    //     10
-    //   );
-    //   return httpRespond.authRespond(res, {
-    //     status: true,
-    //     images
-    //   });
-    // }
-
-    // let pagination = {
-    //   limit: per_page,
-    //   skip: per_page * (page_no - 1)
-    // };
-    const images = await Image.find({ belongsTo: req.params.userId });
-
-    //
-    // if (images.length === 0) {
-    //   return httpRespond.authRespond(res, {
-    //     status: true,
-    //     message: "endOfFile",
-    //     images
-    //   });
-    // }
-    // //console.log(images);
-
-    return httpRespond.authRespond(res, {
-      status: true,
-      images
-    });
-  });
-
-  app.get("/api/videos/:userId", async (req, res) => {
-    const videos = await Video.find({ belongsTo: req.params.userId });
-    console.log(videos);
-    return httpRespond.authRespond(res, {
-      status: true,
-      videos
     });
   });
 

@@ -59,6 +59,7 @@ module.exports = app => {
 
       user.isApproved = true;
       user.accountStatus = "approved";
+      user.isApprovedNote = "account approved";
       user.stripeAccountId = accountDetails.id;
       user.staffHandler = req.params.staffName;
 
