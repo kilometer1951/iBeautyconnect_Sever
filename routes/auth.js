@@ -373,8 +373,8 @@ module.exports = app => {
     async (req, res) => {
       try {
         const response = await cloudinary.uploader.upload(req.file.path);
-        //  const user = await User.findOne({ _id: req.params.userId });
-        //  user.photoIdFront = response.url;
+        const user = await User.findOne({ _id: req.params.userId });
+        user.photoIdFront = response.url;
         // //update stripe account front of id card
         // await stripe.accounts.update(user.stripeAccountId, {
         //   individual: {
@@ -385,7 +385,7 @@ module.exports = app => {
         //     }
         //   }
         // });
-        //  user.save();
+        user.save();
         console.log(response);
         // return httpRespond.authRespond(res, {
         //   status: true,
