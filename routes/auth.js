@@ -111,12 +111,14 @@ module.exports = app => {
         message: "user not found"
       });
     }
-    if (!user && password.comparePassword(req.body.password, user.password)) {
+
+    if (!password.comparePassword(req.body.password, user.password)) {
       return httpRespond.authRespond(res, {
         status: false,
         message: "user not found"
       });
     }
+
     return httpRespond.authRespond(res, {
       status: true,
       message: "user found",
