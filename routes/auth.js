@@ -298,7 +298,7 @@ module.exports = app => {
       );
       user.bankLastFour = stripeAccount.last4;
       user.bankId = stripeAccount.id;
-      user.hasGoneThroughFinalScreen = true;
+      //  user.hasGoneThroughFinalScreen = true;
       user.save();
       return httpRespond.authRespond(res, {
         status: true
@@ -367,4 +367,28 @@ module.exports = app => {
       });
     }
   });
+  app.post(
+    "/auth/upload_photo_id/:userId",
+    upload.single("photo_front"),
+    async (req, res) => {
+      try {
+        const response = await cloudinary.uploader.upload(req.file.path);
+        console.log(response);
+        //  const user = await User.findOne({ _id: req.params.userId });
+        // user.licenseDocument[0].path = response.url;
+        //
+        // user.save();
+        // return httpRespond.authRespond(res, {
+        //   status: true,
+        //   message: "upload complete"
+        // });
+      } catch (e) {
+        console.log(e);
+        return httpRespond.authRespond(res, {
+          status: false,
+          message: e
+        });
+      }
+    }
+  );
 };

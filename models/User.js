@@ -51,7 +51,9 @@ let userSchema = new Schema({
   deactivationNote: "",
   staffHandler: String,
   dob: { type: Date, default: Date.now },
-  service_gender: { type: String, default: "" }
+  service_gender: { type: String, default: "" },
+  photoIdFront: { type: String, default: "" },
+  photoIdBack: { type: String, default: "" }
 });
 
 mongoose.model("users", userSchema);
