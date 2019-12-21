@@ -392,12 +392,12 @@ module.exports = app => {
           individual: {
             verification: {
               document: {
-                front: photofileId
+                front: photofileId.id
               }
             }
           }
         });
-        user.photoIdFront = photofileId;
+        user.photoIdFront = photofileId.id;
         user.save();
         console.log(s);
         return httpRespond.authRespond(res, {
