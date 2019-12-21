@@ -6,6 +6,8 @@ const ip = require("ip");
 const password = require("../functions/password");
 const httpRespond = require("../functions/httpRespond");
 const smsFunctions = require("../functions/SMS");
+const fs = require("fs");
+
 let messageBody = "";
 
 const multer = require("multer");
@@ -374,23 +376,34 @@ module.exports = app => {
       try {
         const response = await cloudinary.uploader.upload(req.file.path);
         const user = await User.findOne({ _id: req.params.userId });
-        user.photoIdFront = response.url;
-        // //update stripe account front of id card
-        // await stripe.accounts.update(user.stripeAccountId, {
-        //   individual: {
-        //     verification: {
-        //       document: {
-        //         front: response.url
-        //       }
-        //     }
-        //   }
-        // });
+        //update stripe account front of id card
+        //upload to stripe
+        const fp = fs.readFileSync(req.file.path);
+        const photofileId = await stripe.files.create({
+          file: {
+            data: fp,
+            name: req.file.filename,
+            type: req.file.mimetype
+          },
+          purpose: "identity_document"
+        });
+        //update stripe account
+        const s = await stripe.accounts.update(user.stripeAccountId, {
+          individual: {
+            verification: {
+              document: {
+                front: photofileId
+              }
+            }
+          }
+        });
+        user.photoIdFront = photofileId;
         user.save();
-        console.log(response);
-        // return httpRespond.authRespond(res, {
-        //   status: true,
-        //   message: "upload complete"
-        // });
+        console.log(s);
+        return httpRespond.authRespond(res, {
+          status: true,
+          message: "upload complete"
+        });
       } catch (e) {
         console.log(e);
         return httpRespond.authRespond(res, {
