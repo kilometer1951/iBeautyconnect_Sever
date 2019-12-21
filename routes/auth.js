@@ -34,12 +34,12 @@ module.exports = app => {
     //   individual: { id_number: "624897317" }
     // });
     // console.log(sa);
-    const ac = await stripe.accounts.list();
-    res.send(ac);
+    // const ac = await stripe.accounts.list();
+    // res.send(ac);
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
-    // const del = await stripe.accounts.del("acct_1FrEaZEyoT2eoyJ9");
+    // const del = await stripe.accounts.del("acct_1FrEnNKPvE05k1yq");
     // console.log(del);
     // stripe.accounts.retrieveExternalAccount(
     //   "acct_1FmQD2EWMyi6h2Gs",
@@ -145,7 +145,8 @@ module.exports = app => {
         dob: 1,
         profilePhoto: 1,
         profession: 1,
-        liveRequest: 1
+        liveRequest: 1,
+        photoId: 1
       }
     );
     return res.send(userFound);
@@ -397,41 +398,10 @@ module.exports = app => {
             }
           }
         });
-        user.photoIdFront = photofileId.id;
+        user.hasGoneThroughFinalScreen = true;
+        user.photoId = photofileId.id;
         user.save();
         console.log(s);
-        return httpRespond.authRespond(res, {
-          status: true,
-          message: "upload complete"
-        });
-      } catch (e) {
-        console.log(e);
-        return httpRespond.authRespond(res, {
-          status: false,
-          message: e
-        });
-      }
-    }
-  );
-  app.post(
-    "/auth/upload_photo_id_back/:userId",
-    upload.single("photo_front"),
-    async (req, res) => {
-      try {
-        const response = await cloudinary.uploader.upload(req.file.path);
-        console.log(response);
-        const user = await User.findOne({ _id: req.params.userId });
-        user.photoIdBack = response.url;
-        await stripe.accounts.update(user.stripeAccountId, {
-          individual: {
-            verification: {
-              document: {
-                back: response.url
-              }
-            }
-          }
-        });
-        user.save();
         return httpRespond.authRespond(res, {
           status: true,
           message: "upload complete"
