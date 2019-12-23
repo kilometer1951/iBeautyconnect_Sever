@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Profession = mongoose.model("professions");
-const User = mongoose.model("users");
+const Partner = mongoose.model("partners");
 const Image = mongoose.model("images");
 const Video = mongoose.model("videos");
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
@@ -22,7 +22,7 @@ cloudinary.config({
   api_secret: "r20BlHgHcoH8h-EznEJPQmG6sZ0"
 });
 
-const httpRespond = require("../functions/httpRespond");
+const httpRespond = require("../../functions/httpRespond");
 
 module.exports = app => {
   app.get("/api/profession", async (req, res) => {
@@ -35,7 +35,7 @@ module.exports = app => {
   });
 
   app.get("/api/services/:userId", async (req, res) => {
-    const response = await User.findOne(
+    const response = await Partner.findOne(
       { _id: req.params.userId },
       { services: 1 }
     );
@@ -46,7 +46,7 @@ module.exports = app => {
   });
 
   app.get("/api/delete/:userId/service/:serviceId", async (req, res) => {
-    const response = await User.findOne(
+    const response = await Partner.findOne(
       { _id: req.params.userId },
       { services: 1 }
     );
@@ -109,7 +109,7 @@ module.exports = app => {
   });
 
   app.post("/api/updateComfortFee/:userId", async (req, res) => {
-    const user = await User.findOne({ _id: req.params.userId });
+    const user = await Partner.findOne({ _id: req.params.userId });
     user.comfortFee = req.body.comfortFeeInput;
     await user.save();
     console.log(user);
@@ -119,7 +119,7 @@ module.exports = app => {
   });
 
   app.post("/api/add/service/:userId", async (req, res) => {
-    const user = await User.findOne(
+    const user = await Partner.findOne(
       { _id: req.params.userId },
       { services: 1 }
     );
@@ -139,7 +139,7 @@ module.exports = app => {
   });
 
   app.post("/api/edit/:userId/service/:serviceId/", async (req, res) => {
-    const updateService = await User.findOne(
+    const updateService = await Partner.findOne(
       {
         _id: req.params.userId
       },
@@ -157,7 +157,7 @@ module.exports = app => {
       }
     }
     await updateService.save();
-    const user = await User.findOne(
+    const user = await Partner.findOne(
       {
         _id: req.params.userId
       },
@@ -213,7 +213,7 @@ module.exports = app => {
 
   app.post("/api/online_status", async (req, res) => {
     //check if account is isActivated before going online
-    const user = await User.findOne({ _id: req.body.userId });
+    const user = await Partner.findOne({ _id: req.body.userId });
     //  console.log(user);
     user.liveRequest = !user.liveRequest;
     user.save();

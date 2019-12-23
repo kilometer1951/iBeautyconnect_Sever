@@ -4,20 +4,12 @@ const client = require("twilio")(secret.TwiloAccountSid, secret.TwiloAuthToken);
 const smsFunctions = {};
 
 smsFunctions.verification = async (req, res, phone, messageBody, code) => {
-  client.messages.create(
-    {
-      to: "+1" + phone,
-      from: "+17739749268",
-      body: messageBody
-    },
-    (err, message) => {
-      if (message === undefined) {
-        return res.send({ status: false });
-      } else {
-        return res.send({ status: true, code: code });
-      }
-    }
-  );
+  const message = await client.messages.create({
+    to: "+1" + phone,
+    from: "+17739749268",
+    body: messageBody
+  });
+  return message;
 };
 
 smsFunctions.sendSMS = async (req, res, phoneNumber, messageBody) => {

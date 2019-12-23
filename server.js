@@ -6,7 +6,8 @@ const express = require("express"),
 const config = require("./config/secret");
 
 //models
-require("./models/User");
+require("./models/Partner");
+require("./models/Client");
 require("./models/Profession");
 require("./models/Image");
 require("./models/Video");
@@ -29,8 +30,10 @@ mongoose.connect(
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
-require("./routes/auth")(app);
-require("./routes/api")(app);
+require("./routes/partner/authPartner")(app);
+require("./routes/partner/apiPartner")(app);
+require("./routes/client/authClient")(app);
+
 require("./routes/adminApi")(app);
 
 const port = process.env.PORT || 5002;

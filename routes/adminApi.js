@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Profession = mongoose.model("professions");
-const User = mongoose.model("users");
+const Partner = mongoose.model("partners");
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const ip = require("ip");
 
@@ -10,14 +10,14 @@ const smsFunctions = require("../functions/SMS");
 
 module.exports = app => {
   app.get("/adminApi/partnerAccount", async (req, res) => {
-    const partners = await User.find({});
+    const partners = await Partner.find({});
     return res.send(partners);
   });
   app.post(
     "/adminApi/accounHasBeenApproved/partnerAccount/:partnerId/staffHandler/:staffName",
     async (req, res) => {
       //find the user and update isActive to true
-      const user = await User.findOne({ _id: req.params.partnerId });
+      const user = await Partner.findOne({ _id: req.params.partnerId });
       const ssnSplit = user.ssnNumber.split("");
       const lastFour = ssnSplit
         .splice(5, 8)
@@ -76,7 +76,7 @@ module.exports = app => {
     "/adminApi/accounHasBeenDeactivated/partnerAccount/:partnerId/staffHandler/:staffName",
     async (req, res) => {
       //find the user and update isActive to true
-      const user = await User.findOne({ _id: req.params.partnerId });
+      const user = await Partner.findOne({ _id: req.params.partnerId });
       user.isDeactivated = true;
       user.deactivationNote = req.body.note;
       //send the partner a welcome messsage

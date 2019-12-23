@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
-const User = mongoose.model("users");
+const Partner = mongoose.model("partners");
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const ip = require("ip");
 
-const password = require("../functions/password");
-const httpRespond = require("../functions/httpRespond");
-const smsFunctions = require("../functions/SMS");
+const password = require("../../functions/password");
+const httpRespond = require("../../functions/httpRespond");
+const smsFunctions = require("../../functions/SMS");
 const fs = require("fs");
 
 let messageBody = "";
@@ -39,7 +39,7 @@ module.exports = app => {
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
-    // const del = await stripe.accounts.del("acct_1FryKLCrtIMpYBQr");
+    // const del = await stripe.accounts.del("acct_1Frz7qCFElbrVnce");
     // console.log(del);
     // stripe.accounts.retrieveExternalAccount(
     //   "acct_1FmQD2EWMyi6h2Gs",
@@ -63,14 +63,28 @@ module.exports = app => {
   });
 
   app.post("/auth/verification", async (req, res) => {
-    const code = Math.floor(Math.random() * 100) + 9000;
-    //  send verification code
-    messageBody = "iBeautyconnect Partner.Your verification code is: " + code;
-    smsFunctions.verification(req, res, req.body.phone, messageBody, code);
+    try {
+      const code = Math.floor(Math.random() * 100) + 9000;
+      //  send verification code
+      messageBody = "iBeautyconnect Partner.Your verification code is: " + code;
+      const response = await smsFunctions.verification(
+        req,
+        res,
+        req.body.phone,
+        messageBody,
+        code
+      );
+      return res.send({ status: true, code: code });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
   });
 
   app.post("/auth/signup", async (req, res) => {
-    const user = await User.findOne({ phone: req.body.phone });
+    const user = await Partner.findOne({ phone: req.body.phone });
     if (user) {
       return httpRespond.authRespond(res, {
         status: false,
@@ -96,7 +110,7 @@ module.exports = app => {
       ]
     };
 
-    const createdUser = await new User(newUser).save();
+    const createdUser = await new Partner(newUser).save();
     return httpRespond.authRespond(res, {
       status: true,
       message: "user created",
@@ -106,7 +120,7 @@ module.exports = app => {
 
   app.post("/auth/login", async (req, res) => {
     //login
-    const user = await User.findOne({ email: req.body.email });
+    const user = await Partner.findOne({ email: req.body.email });
     if (!user) {
       return httpRespond.authRespond(res, {
         status: false,
@@ -129,7 +143,7 @@ module.exports = app => {
   });
 
   app.get("/auth/userIsActive/:userId", async (req, res) => {
-    const userFound = await User.findOne(
+    const userFound = await Partner.findOne(
       { _id: req.params.userId },
       {
         isApproved: 1,
@@ -153,7 +167,7 @@ module.exports = app => {
   });
 
   app.post("/auth/service_gender/:userId", async (req, res) => {
-    const user = await User.findOne({ _id: req.params.userId });
+    const user = await Partner.findOne({ _id: req.params.userId });
     user.service_gender = req.body.service_gender;
     user.save();
     return httpRespond.authRespond(res, {
@@ -162,7 +176,7 @@ module.exports = app => {
   });
 
   app.post("/auth/profession/:userId", async (req, res) => {
-    const user = await User.findOne({ _id: req.params.userId });
+    const user = await Partner.findOne({ _id: req.params.userId });
     user.profession = req.body.profession;
     user.save();
     return httpRespond.authRespond(res, {
@@ -171,7 +185,7 @@ module.exports = app => {
   });
 
   app.post("/auth/user_location/:userId", async (req, res) => {
-    const user = await User.findOne({ _id: req.params.userId });
+    const user = await Partner.findOne({ _id: req.params.userId });
     user.locationState = req.body.locationState;
     user.locationCity = req.body.locationCity;
     user.postal_code = req.body.postalCode;
@@ -188,7 +202,7 @@ module.exports = app => {
     async (req, res) => {
       try {
         const response = await cloudinary.uploader.upload(req.file.path);
-        const user = await User.findOne({ _id: req.params.userId });
+        const user = await Partner.findOne({ _id: req.params.userId });
         user.profilePhoto = response.url;
         user.save();
         return httpRespond.authRespond(res, {
@@ -214,7 +228,7 @@ module.exports = app => {
           resource_type: "video"
         });
         //  console.log(response);
-        const user = await User.findOne({ _id: req.params.userId });
+        const user = await Partner.findOne({ _id: req.params.userId });
         user.salesVideo = response.url;
         user.save();
         return httpRespond.authRespond(res, {
@@ -244,7 +258,7 @@ module.exports = app => {
   });
 
   app.post("/auth/add_debit_card", async (req, res) => {
-    const user = await User.findOne({ _id: req.body.userId });
+    const user = await Partner.findOne({ _id: req.body.userId });
     const newDob = req.body.dob.split("/");
     const ssnSplit = user.ssnNumber.split("");
 
@@ -288,7 +302,7 @@ module.exports = app => {
   });
 
   app.post("/auth/add_bank_account_info", async (req, res) => {
-    const user = await User.findOne({ _id: req.body.userId });
+    const user = await Partner.findOne({ _id: req.body.userId });
 
     let stripeAccount;
     //add bank to account and update DOB
@@ -316,7 +330,7 @@ module.exports = app => {
   });
 
   app.post("/auth/hasGoneThroughFinalScreen", async (req, res) => {
-    const user = await User.findOne({ _id: req.body.userId });
+    const user = await Partner.findOne({ _id: req.body.userId });
     user.hasGoneThroughFinalScreen = true;
     user.save();
     return httpRespond.authRespond(res, {
@@ -330,7 +344,7 @@ module.exports = app => {
     async (req, res) => {
       try {
         const response = await cloudinary.uploader.upload(req.file.path);
-        const user = await User.findOne({ _id: req.params.userId });
+        const user = await Partner.findOne({ _id: req.params.userId });
         user.licenseDocument[0].path = response.url;
 
         user.save();
@@ -350,7 +364,7 @@ module.exports = app => {
 
   app.post("/auth/uploadDocuments/:userId", async (req, res) => {
     try {
-      const user = await User.findOne({ _id: req.params.userId });
+      const user = await Partner.findOne({ _id: req.params.userId });
       user.ssnNumber = req.body.ssnNumber;
       user.introScreen = true;
       user.licenseDocument[0].licenseNumber = req.body.licenseNumber;
@@ -376,7 +390,7 @@ module.exports = app => {
     async (req, res) => {
       try {
         const response = await cloudinary.uploader.upload(req.file.path);
-        const user = await User.findOne({ _id: req.params.userId });
+        const user = await Partner.findOne({ _id: req.params.userId });
         //update stripe account front of id card
         //upload to stripe
         const fp = fs.readFileSync(req.file.path);

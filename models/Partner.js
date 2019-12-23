@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
-let userSchema = new Schema({
+let partnerSchema = new Schema({
   date_joined: { type: Date, default: Date.now },
   fName: String,
   lName: String,
@@ -55,4 +55,4 @@ let userSchema = new Schema({
   photoId: { type: String, default: "" }
 });
 
-mongoose.model("users", userSchema);
+mongoose.model("partners", partnerSchema);
