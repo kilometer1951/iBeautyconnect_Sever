@@ -41,7 +41,7 @@ module.exports = app => {
             line1: "1814 dylane drive",
             line2: null,
             postal_code: "46319",
-            state: "Indiana"
+            state: "IN"
           }
         },
 

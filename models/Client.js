@@ -8,11 +8,14 @@ let clientSchema = new Schema({
   phone: String,
   email: String,
   profilePhoto: String,
-  locationSearch: { type: String, default: "all" },
+  search: { type: String, default: "all" },
   locationState: { type: String, default: "" },
   locationCity: { type: String, default: "" },
   address: { type: String, default: "" },
-  postal_code: { type: String, default: "" }
+  postal_code: { type: String, default: "" },
+  searchByCity: { type: String, default: "" },
+  searchByState: { type: String, default: "" },
+  searchByGender: { type: String, default: "" }
 });
 
 mongoose.model("clients", clientSchema);
