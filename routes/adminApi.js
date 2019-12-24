@@ -36,12 +36,12 @@ module.exports = app => {
           ssn_last_4: lastFour,
           id_number: user.ssnNumber,
           address: {
-            city: user.locationCity,
+            city: "Griffith",
             country: "US",
-            line1: user.address,
+            line1: "1814 dylane drive",
             line2: null,
-            postal_code: user.postal_code,
-            state: user.locationState
+            postal_code: "46319",
+            state: "Indiana"
           }
         },
 
