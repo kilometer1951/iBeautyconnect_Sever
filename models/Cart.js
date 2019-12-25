@@ -1,12 +1,11 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const itemSchema = require("./Item");
 
 const cartSchema = new Schema({
   dateAdded: { type: Date, default: Date.now },
   cart_belongs_to: { type: Schema.Types.ObjectId, ref: "clients" },
   cart_is_for: { type: Schema.Types.ObjectId, ref: "partners" },
-  items: [itemSchema],
+  items: [{ services: {}, time: { type: String, default: "" } }],
   type_of_cart: { type: String, default: "regular" },
   hasCheckedout: { type: Boolean, default: false },
   subTotal: String,

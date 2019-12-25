@@ -31,6 +31,7 @@ mongoose.connect(
   { useNewUrlParser: true, useUnifiedTopology: true }
 );
 
+require("./routes/api")(app);
 require("./routes/partner/authPartner")(app);
 require("./routes/partner/apiPartner")(app);
 require("./routes/client/authClient")(app);
