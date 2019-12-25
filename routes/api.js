@@ -32,7 +32,7 @@ module.exports = app => {
       const newCart = {
         cart_belongs_to: req.body.clientId,
         cart_is_for: req.body.partnerId,
-        items: { services, time: "9:20PM" }
+        items: { services }
       };
 
       if (cartExist) {
