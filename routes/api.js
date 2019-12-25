@@ -10,15 +10,15 @@ module.exports = app => {
       cart_belongs_to: req.params.clientId,
       hasCheckedout: false
     });
-    cart.items.forEach(function(value) {
-      //console.log(value.services._id == req.params.serviceId);
-      if (value.services._id == req.params.serviceId) {
-        return httpRespond.authRespond(res, {
-          status: true,
-          item_exist: true,
-          message: "item exist"
-        });
-      }
+
+    let data = cart.items.filter(function(value) {
+      return value.services._id == req.params.serviceId;
+    });
+
+    return httpRespond.authRespond(res, {
+      status: true,
+      item_exist: data.length !== 0 ? true : false,
+      message: "item exist"
     });
   });
 
@@ -36,11 +36,20 @@ module.exports = app => {
       };
 
       if (cartExist) {
-        //  update cart
-        const cart = await Cart.update(
-          { _id: cartExist._id },
-          { $push: { items: { services } } }
-        );
+        if (cartExist.cart_is_for == req.body.partnerId) {
+          //  update cart
+          const cart = await Cart.update(
+            { _id: cartExist._id },
+            { $push: { items: { services } } }
+          );
+          return httpRespond.authRespond(res, {
+            status: true
+          });
+        } else {
+          return httpRespond.authRespond(res, {
+            status: false
+          });
+        }
       } else {
         //new cart
         const cart = await new Cart(newCart).save();
