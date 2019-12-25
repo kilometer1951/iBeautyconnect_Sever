@@ -11,6 +11,7 @@ require("./models/Client");
 require("./models/Profession");
 require("./models/Image");
 require("./models/Video");
+require("./models/Cart");
 
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: true }));
