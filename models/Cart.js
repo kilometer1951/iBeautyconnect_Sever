@@ -12,7 +12,9 @@ const cartSchema = new Schema({
   stripeFee: String,
   tax: String,
   total: String,
-  orderIsComplete: { type: Boolean, default: false }
+  orderIsComplete: { type: Boolean, default: false },
+  booking_date: { type: Date, default: Date.now },
+  booking_time: { type: String, default: "" }
 });
 
 mongoose.model("carts", cartSchema);
