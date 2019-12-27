@@ -14,7 +14,9 @@ const cartSchema = new Schema({
   total: String,
   orderIsComplete: { type: Boolean, default: false },
   booking_date: { type: Date, default: Date.now },
-  booking_time: { type: String, default: "" }
+  booking_time: { type: String, default: "" },
+  client_check_in_location: { type: String, default: "" },
+  partner_complete_order_location: { type: String, default: "" }
 });
 
 mongoose.model("carts", cartSchema);

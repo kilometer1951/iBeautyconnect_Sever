@@ -50,7 +50,7 @@ module.exports = app => {
     });
   });
 
-  app.post("/add_to_cart", async (req, res) => {
+  app.post("/api/add_to_cart", async (req, res) => {
     try {
       const cartExist = await Cart.findOne({
         cart_belongs_to: req.body.clientId,
@@ -91,5 +91,38 @@ module.exports = app => {
         message: e
       });
     }
+  });
+
+  app.post("/api/delete_cart_item", async (req, res) => {
+    const updated = await Cart.update(
+      {
+        _id: req.body.cartId,
+        hasCheckedout: false
+      },
+      {
+        $pull: {
+          items: {
+            _id: req.body.itemID
+          }
+        }
+      },
+
+      {
+        multi: true
+      }
+    );
+
+    const cart = await Cart.findOne({
+      _id: req.body.cartId,
+      hasCheckedout: false
+    });
+
+    if (cart.items.length === 0) {
+      console.log(cart.items.length);
+      await Cart.deleteOne({ _id: req.body.cartId, hasCheckedout: false });
+    }
+    return httpRespond.authRespond(res, {
+      status: true
+    });
   });
 };

@@ -15,7 +15,14 @@ let clientSchema = new Schema({
   postal_code: { type: String, default: "" },
   searchByCity: { type: String, default: "" },
   searchByState: { type: String, default: "" },
-  searchByGender: { type: String, default: "" }
+  searchByGender: { type: String, default: "" },
+  cards: [
+    {
+      cardId: { type: String, default: "" },
+      last4: { type: String, default: "" },
+      isDefault: { type: Boolean, default: false }
+    }
+  ]
 });
 
 mongoose.model("clients", clientSchema);
