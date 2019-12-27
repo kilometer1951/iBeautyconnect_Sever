@@ -11,14 +11,42 @@ module.exports = app => {
       hasCheckedout: false
     });
 
-    let data = cart.items.filter(function(value) {
-      return value.services._id == req.params.serviceId;
-    });
+    if (cart !== null) {
+      let data = cart.items.filter(function(value) {
+        return value.services._id == req.params.serviceId;
+      });
 
+      return httpRespond.authRespond(res, {
+        status: true,
+        item_exist: data.length !== 0 ? true : false,
+        message: data.length !== 0 ? "item exist" : "item does not exist"
+      });
+    }
     return httpRespond.authRespond(res, {
       status: true,
-      item_exist: data.length !== 0 ? true : false,
-      message: "item exist"
+      item_exist: false,
+      message: "item does not exist"
+    });
+  });
+
+  app.get("/api/cart_count/:clientId/", async (req, res) => {
+    const cart_count = await Cart.findOne({
+      cart_belongs_to: req.params.clientId
+    }).count();
+    //console.log(cart_count);
+    return httpRespond.authRespond(res, {
+      status: cart_count !== 0 ? true : false
+    });
+  });
+
+  app.get("/api/cart/:clientId/", async (req, res) => {
+    const cart = await Cart.findOne({
+      cart_belongs_to: req.params.clientId,
+      hasCheckedout: false
+    });
+    return httpRespond.authRespond(res, {
+      status: true,
+      cart
     });
   });
 
