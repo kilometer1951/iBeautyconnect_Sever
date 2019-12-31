@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Client = mongoose.model("clients");
 const Partner = mongoose.model("partners");
+const Cart = mongoose.model("carts");
+
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 
 const httpRespond = require("../../functions/httpRespond");
@@ -29,6 +31,17 @@ module.exports = app => {
     return httpRespond.authRespond(res, {
       status: true,
       cards
+    });
+  });
+
+  app.get("/api/get_item_in_cart_per_client/:cartId/", async (req, res) => {
+    const cart = await Cart.findOne({
+      _id: req.params.cartId
+    });
+    //console.log(cart_count);
+    return httpRespond.authRespond(res, {
+      status: true,
+      items: cart.items
     });
   });
 };
