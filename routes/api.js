@@ -3,31 +3,36 @@ const Client = mongoose.model("clients");
 const Partner = mongoose.model("partners");
 const Cart = mongoose.model("carts");
 const httpRespond = require("../functions/httpRespond");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 
 module.exports = app => {
-  app.get("/api/check_cart/:clientId/:serviceId", async (req, res) => {
-    const cart = await Cart.findOne({
-      cart_belongs_to: req.params.clientId,
-      hasCheckedout: false
-    });
-
-    if (cart !== null) {
-      let data = cart.items.filter(function(value) {
-        return value.services._id == req.params.serviceId;
+  app.get(
+    "/api/check_cart/:clientId/:partnerId/:serviceId",
+    async (req, res) => {
+      const cart = await Cart.findOne({
+        cart_belongs_to: req.params.clientId,
+        cart_is_for: req.params.partnerId,
+        hasCheckedout: false
       });
 
+      if (cart !== null) {
+        let data = cart.items.filter(function(value) {
+          return value.services._id == req.params.serviceId;
+        });
+
+        return httpRespond.authRespond(res, {
+          status: true,
+          item_exist: data.length !== 0 ? true : false,
+          message: data.length !== 0 ? "item exist" : "item does not exist"
+        });
+      }
       return httpRespond.authRespond(res, {
         status: true,
-        item_exist: data.length !== 0 ? true : false,
-        message: data.length !== 0 ? "item exist" : "item does not exist"
+        item_exist: false,
+        message: "item does not exist"
       });
     }
-    return httpRespond.authRespond(res, {
-      status: true,
-      item_exist: false,
-      message: "item does not exist"
-    });
-  });
+  );
 
   app.get("/api/cart_count/:clientId/", async (req, res) => {
     const cart_count = await Cart.findOne({
@@ -39,11 +44,15 @@ module.exports = app => {
     });
   });
 
-  app.get("/api/cart/:clientId/", async (req, res) => {
-    const cart = await Cart.findOne({
+  app.get("/api/cart_regular/:clientId/", async (req, res) => {
+    const cart = await Cart.find({
       cart_belongs_to: req.params.clientId,
+      type_of_cart: "regular",
       hasCheckedout: false
-    });
+    }).populate("cart_is_for");
+
+    console.log(cart);
+
     return httpRespond.authRespond(res, {
       status: true,
       cart
@@ -54,6 +63,8 @@ module.exports = app => {
     try {
       const cartExist = await Cart.findOne({
         cart_belongs_to: req.body.clientId,
+        cart_is_for: req.body.partnerId,
+        type_of_cart: "regular",
         hasCheckedout: false
       });
       const services = req.body.services;
@@ -64,20 +75,14 @@ module.exports = app => {
       };
 
       if (cartExist) {
-        if (cartExist.cart_is_for == req.body.partnerId) {
-          //  update cart
-          const cart = await Cart.update(
-            { _id: cartExist._id },
-            { $push: { items: { services } } }
-          );
-          return httpRespond.authRespond(res, {
-            status: true
-          });
-        } else {
-          return httpRespond.authRespond(res, {
-            status: false
-          });
-        }
+        //  update cart
+        const cart = await Cart.update(
+          { _id: cartExist._id },
+          { $push: { items: { services } } }
+        );
+        return httpRespond.authRespond(res, {
+          status: true
+        });
       } else {
         //new cart
         const cart = await new Cart(newCart).save();
@@ -118,7 +123,6 @@ module.exports = app => {
     });
 
     if (cart.items.length === 0) {
-      console.log(cart.items.length);
       await Cart.deleteOne({ _id: req.body.cartId, hasCheckedout: false });
     }
     return httpRespond.authRespond(res, {

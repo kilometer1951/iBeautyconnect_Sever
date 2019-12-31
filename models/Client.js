@@ -16,13 +16,7 @@ let clientSchema = new Schema({
   searchByCity: { type: String, default: "" },
   searchByState: { type: String, default: "" },
   searchByGender: { type: String, default: "" },
-  cards: [
-    {
-      cardId: { type: String, default: "" },
-      last4: { type: String, default: "" },
-      isDefault: { type: Boolean, default: false }
-    }
-  ]
+  stripeId: { type: String, default: "" }
 });
 
 mongoose.model("clients", clientSchema);

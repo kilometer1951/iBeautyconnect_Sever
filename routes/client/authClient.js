@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Client = mongoose.model("clients");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 
 const password = require("../../functions/password");
 const httpRespond = require("../../functions/httpRespond");
@@ -49,33 +50,31 @@ module.exports = app => {
   });
 
   app.post("/auth_client/signup", async (req, res) => {
-    const newUser = {
-      name: req.body.name,
-      phone: req.body.phone,
-      email: req.body.email
-    };
-    const createdUser = await new Client(newUser).save();
-    console.log(createdUser);
-    return httpRespond.authRespond(res, {
-      status: true,
-      message: "user created",
-      user: createdUser
-    });
+    try {
+      const customer = await stripe.customers.create({
+        description: "Customer for: " + req.body.email,
+        name: req.body.name,
+        phone: req.body.phone,
+        email: req.body.email
+      });
+      const newUser = {
+        name: req.body.name,
+        phone: req.body.phone,
+        email: req.body.email,
+        stripeId: customer.id
+      };
+      const createdUser = await new Client(newUser).save();
+      console.log(createdUser);
+      return httpRespond.authRespond(res, {
+        status: true,
+        message: "user created",
+        user: createdUser
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
   });
-
-  // app.post("/auth/login", async (req, res) => {
-  //   //login
-  //   const user = await User.findOne({ email: req.body.email });
-  //   if (!user) {
-  //     return httpRespond.authRespond(res, {
-  //       status: false,
-  //       message: "user not found"
-  //     });
-  //   }
-  //   return httpRespond.authRespond(res, {
-  //     status: true,
-  //     message: "user found",
-  //     user: user
-  //   });
-  // });
 };
