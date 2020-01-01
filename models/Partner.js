@@ -40,7 +40,7 @@ let partnerSchema = new Schema({
       serviceDescription: { type: String, default: "" }
     }
   ],
-  comfortFee: { type: String, default: "" },
+  comfortFee: { type: String, default: "0.00" },
   stripeAccountId: { type: String, default: "" },
   cardId: { type: String, default: "" },
   bankId: { type: String, default: "" },

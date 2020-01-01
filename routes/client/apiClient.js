@@ -24,10 +24,8 @@ module.exports = app => {
     }
   });
 
-  app.get("/api/get_user_cards/:stripeId", async (req, res) => {
-    const cards = await stripe.customers.listSources(req.params.stripeId, {
-      object: "bank_account"
-    });
+  app.get("/api/get_client_cards/:stripeId", async (req, res) => {
+    const cards = await stripe.customers.listSources(req.params.stripeId, {});
     return httpRespond.authRespond(res, {
       status: true,
       cards
@@ -43,5 +41,29 @@ module.exports = app => {
       status: true,
       items: cart.items
     });
+  });
+
+  app.post("/api/add_card/", async (req, res) => {
+    try {
+      const client = await Client.findOne({
+        _id: req.body.clientId
+      });
+
+      await stripe.customers.createSource(client.stripeId, {
+        source: req.body.tokenId
+      });
+
+      const cards = await stripe.customers.listSources(client.stripeId);
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        cards
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
   });
 };

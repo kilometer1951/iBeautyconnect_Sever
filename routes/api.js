@@ -10,8 +10,8 @@ module.exports = app => {
     "/api/check_cart/:clientId/:partnerId/:serviceId",
     async (req, res) => {
       const cart = await Cart.findOne({
-        cart_belongs_to: req.params.clientId,
-        cart_is_for: req.params.partnerId,
+        client: req.params.clientId,
+        partner: req.params.partnerId,
         hasCheckedout: false
       });
 
@@ -36,7 +36,7 @@ module.exports = app => {
 
   app.get("/api/cart_count/:clientId/", async (req, res) => {
     const cart_count = await Cart.findOne({
-      cart_belongs_to: req.params.clientId
+      client: req.params.clientId
     }).count();
     //console.log(cart_count);
     return httpRespond.authRespond(res, {
@@ -46,10 +46,10 @@ module.exports = app => {
 
   app.get("/api/cart_regular/:clientId/", async (req, res) => {
     const cart = await Cart.find({
-      cart_belongs_to: req.params.clientId,
+      client: req.params.clientId,
       type_of_cart: "regular",
       hasCheckedout: false
-    }).populate("cart_is_for");
+    }).populate("partner");
 
     console.log(cart);
 
@@ -62,15 +62,15 @@ module.exports = app => {
   app.post("/api/add_to_cart", async (req, res) => {
     try {
       const cartExist = await Cart.findOne({
-        cart_belongs_to: req.body.clientId,
-        cart_is_for: req.body.partnerId,
+        client: req.body.clientId,
+        partner: req.body.partnerId,
         type_of_cart: "regular",
         hasCheckedout: false
       });
       const services = req.body.services;
       const newCart = {
-        cart_belongs_to: req.body.clientId,
-        cart_is_for: req.body.partnerId,
+        client: req.body.clientId,
+        partner: req.body.partnerId,
         items: { services }
       };
 
