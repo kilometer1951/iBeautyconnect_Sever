@@ -18,7 +18,8 @@ const cartSchema = new Schema({
   client_check_in_location: { type: String, default: "" },
   partner_complete_order_location: { type: String, default: "" },
   stripe_charge_id: { type: String, default: "" },
-  comfort_fee: { type: String, default: "" }
+  comfort_fee: { type: String, default: "" },
+  hasCanceled: { type: Boolean, default: false }
 });
 
 mongoose.model("carts", cartSchema);

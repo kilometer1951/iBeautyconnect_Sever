@@ -27,7 +27,7 @@ const httpRespond = require("../../functions/httpRespond");
 module.exports = app => {
   app.get("/api/profession", async (req, res) => {
     const profession = await Profession.find();
-    console.log(profession);
+    //  console.log(profession);
     return httpRespond.authRespond(res, {
       status: true,
       data: profession
@@ -71,7 +71,7 @@ module.exports = app => {
 
   app.get("/api/videos/:userId", async (req, res) => {
     const videos = await Video.find({ belongsTo: req.params.userId });
-    console.log(videos);
+    //  console.log(videos);
     return httpRespond.authRespond(res, {
       status: true,
       videos
@@ -112,7 +112,7 @@ module.exports = app => {
     const user = await Partner.findOne({ _id: req.params.userId });
     user.comfortFee = req.body.comfortFeeInput;
     await user.save();
-    console.log(user);
+    //console.log(user);
     return httpRespond.authRespond(res, {
       status: true
     });
@@ -182,7 +182,7 @@ module.exports = app => {
         cloudinaryId: response.public_id
       };
       const image = await new Image(newImage).save();
-      console.log(image);
+      //  console.log(image);
       return httpRespond.authRespond(res, {
         status: true,
         image

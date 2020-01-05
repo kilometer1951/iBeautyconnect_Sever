@@ -3,6 +3,9 @@ const express = require("express"),
   bodyParser = require("body-parser"),
   mongoose = require("mongoose");
 
+let http = require("http").Server(app);
+let io = require("socket.io")(http);
+
 const config = require("./config/secret");
 
 //models
@@ -12,6 +15,7 @@ require("./models/Profession");
 require("./models/Image");
 require("./models/Video");
 require("./models/Cart");
+require("./models/Message");
 
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -36,10 +40,10 @@ require("./routes/partner/authPartner")(app);
 require("./routes/partner/apiPartner")(app);
 require("./routes/client/authClient")(app);
 require("./routes/client/apiClient")(app);
-
+require("./socket/chatSocket")(app, io);
 require("./routes/adminApi")(app);
 
 const port = process.env.PORT || 5002;
-app.listen(port, () => {
+http.listen(port, () => {
   console.log("Partner server connected successfully at port:", port);
 });

@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const Client = mongoose.model("clients");
 const Partner = mongoose.model("partners");
 const Cart = mongoose.model("carts");
+const Message = mongoose.model("messages");
+
 const httpRespond = require("../functions/httpRespond");
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 
@@ -35,28 +37,46 @@ module.exports = app => {
   );
 
   app.get("/api/cart_count/:clientId/", async (req, res) => {
-    const cart_count = await Cart.findOne({
-      client: req.params.clientId
-    }).count();
+    const cart_count = await Cart.find({
+      client: req.params.clientId,
+      hasCheckedout: false
+    }).countDocuments();
     //console.log(cart_count);
     return httpRespond.authRespond(res, {
       status: cart_count !== 0 ? true : false
     });
   });
 
-  app.get("/api/cart_regular/:clientId/", async (req, res) => {
-    const cart = await Cart.find({
+  app.get("/api/appointment_count/:clientId/", async (req, res) => {
+    const appointment_count = await Cart.find({
       client: req.params.clientId,
-      type_of_cart: "regular",
-      hasCheckedout: false
-    }).populate("partner");
-
-    console.log(cart);
-
+      hasCheckedout: true,
+      orderIsComplete: false,
+      hasCanceled: false
+    }).countDocuments();
+    //console.log(cart_count);
     return httpRespond.authRespond(res, {
-      status: true,
-      cart
+      status: appointment_count !== 0 ? true : false
     });
+  });
+
+  app.get("/api/cart_regular/:clientId/", async (req, res) => {
+    try {
+      const cart = await Cart.find({
+        client: req.params.clientId,
+        type_of_cart: "regular",
+        hasCheckedout: false
+      }).populate("partner");
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        cart
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
   });
 
   app.post("/api/add_to_cart", async (req, res) => {
@@ -127,6 +147,21 @@ module.exports = app => {
     }
     return httpRespond.authRespond(res, {
       status: true
+    });
+  });
+
+  app.get("/api/messages/:clientId", async (req, res) => {
+    const messages = await Message.find({
+      client: req.params.clientId,
+      deleted: false
+    })
+      .populate("client")
+      .populate("partner")
+      .sort({ dateModified: -1 });
+
+    return httpRespond.authRespond(res, {
+      status: true,
+      messages
     });
   });
 };
