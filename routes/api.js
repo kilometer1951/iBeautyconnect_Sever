@@ -164,4 +164,17 @@ module.exports = app => {
       messages
     });
   });
+  app.get("/api/conversations/:messageId", async (req, res) => {
+    const messages = await Message.findOne({
+      _id: req.params.messageId,
+      deleted: false
+    })
+      .populate("client")
+      .populate("partner");
+
+    return httpRespond.authRespond(res, {
+      status: true,
+      conversations: messages.message_data
+    });
+  });
 };
