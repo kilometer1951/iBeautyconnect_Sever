@@ -133,8 +133,8 @@ module.exports = app => {
         cartId + "oneHourBefore",
         oneHourBefore,
         function() {
-          let partnerMessage = `Appointment reminder. This is a quick reminder of your appointment with ${client_name} on ${newDate} at ${bookingTime}. iBeautyConnect`;
-          let clientMessage = `Appointment reminder. This is a quick reminder of your appointment with ${partner_name} on ${newDate} at ${bookingTime}. iBeautyConnect`;
+          let partnerMessage = `Appointment reminder. This is a quick reminder of your appointment with ${client_name} on ${newDate} at ${bookingTime}. Do not forget to tell your client to check in through the app thanks iBeautyConnect`;
+          let clientMessage = `Appointment reminder. This is a quick reminder of your appointment with ${partner_name} on ${newDate} at ${bookingTime}. Do not forget to check in through the app thanks iBeautyConnect`;
           smsFunctions.sendSMS(req, res, partner_phone_number, partnerMessage);
           smsFunctions.sendSMS(req, res, client_phone_number, clientMessage);
         }
@@ -143,8 +143,8 @@ module.exports = app => {
         cartId + "thirtyMinuteBefore",
         thirtyMinuteBefore,
         function() {
-          let partnerMessage = `Appointment reminder. This is a quick reminder of your appointment with ${client_name} on ${newDate} at ${bookingTime}. iBeautyConnect`;
-          let clientMessage = `Appointment reminder. This is a quick reminder of your appointment with ${partner_name} on ${newDate} at ${bookingTime}. iBeautyConnect`;
+          let partnerMessage = `Appointment reminder. This is a quick reminder of your appointment with ${client_name} on ${newDate} at ${bookingTime}. Do not forget to tell your client to check in through the app thanks iBeautyConnect`;
+          let clientMessage = `Appointment reminder. This is a quick reminder of your appointment with ${partner_name} on ${newDate} at ${bookingTime}.  Do not forget to check in through the app thanks iBeautyConnect`;
           smsFunctions.sendSMS(req, res, partner_phone_number, partnerMessage);
           smsFunctions.sendSMS(req, res, client_phone_number, clientMessage);
         }

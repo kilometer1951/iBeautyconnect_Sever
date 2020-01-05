@@ -177,4 +177,20 @@ module.exports = app => {
       conversations: messages.message_data
     });
   });
+  app.get("/api/appointments_client/:clientId", async (req, res) => {
+    const appointments = await Cart.find({
+      client: req.params.clientId,
+      hasCheckedout: true,
+      orderIsComplete: false,
+      hasCanceled: false
+    })
+      .populate("client")
+      .populate("partner")
+      .sort({ booking_date: -1 });
+
+    return httpRespond.authRespond(res, {
+      status: true,
+      appointments
+    });
+  });
 };

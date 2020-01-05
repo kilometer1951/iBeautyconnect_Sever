@@ -41,6 +41,7 @@ require("./routes/partner/apiPartner")(app);
 require("./routes/client/authClient")(app);
 require("./routes/client/apiClient")(app);
 require("./socket/chatSocket")(app, io);
+require("./socket/appSocket")(app, io);
 require("./routes/adminApi")(app);
 
 const port = process.env.PORT || 5002;
