@@ -1,9 +1,12 @@
 const mongoose = require("mongoose");
 const Message = mongoose.model("messages");
 
+let messageBody = "";
+const smsFunctions = require("../functions/SMS");
+
 module.exports = (app, io) => {
   io.on("connection", function(socket) {
-    console.log("user connected");
+    //  console.log("user connected");
 
     socket.on("newMessage", async function(msg) {
       io.emit("newMessage", { msg });
@@ -13,6 +16,14 @@ module.exports = (app, io) => {
         partner: msg.partnerId,
         deleted: false
       });
+
+      if (msg.type == "reschedule") {
+        //send sms
+        messageBody =
+          msg.message +
+          ". Open the iBeautyConnect app to respond to your clients request. iBeautyConnectPartner://get_started thanks.";
+        smsFunctions.sendSMS("req", "res", msg.partnerPhone, messageBody);
+      }
 
       if (message) {
         //update message

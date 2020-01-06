@@ -150,6 +150,70 @@ module.exports = app => {
     });
   });
 
+  app.post("/api/check_in_location", async (req, res) => {
+    const cart = await Cart.findOne({
+      _id: req.body.cartId
+    });
+    cart.client_check_in_location = req.body.location;
+    cart.save();
+    return httpRespond.authRespond(res, {
+      status: true
+    });
+  });
+
+  app.post("/api/update_cart_check_in", async (req, res) => {
+    try {
+      const {
+        cartId,
+        partner_stripe_id,
+        partnerId,
+        partnerPhone,
+        stripe_charge_id,
+        today,
+        total,
+        booking_date,
+        booking_time
+      } = req.body.checkInData;
+
+      const stripeFees = parseFloat(total) * 0.029 + 0.3;
+      const total_left_after_after_stripe = parseFloat(total) - stripeFees;
+      const ibeauty_connect_takes = total_left_after_after_stripe * 0.17;
+      const partner_should_recieve =
+        total_left_after_after_stripe - ibeauty_connect_takes;
+      const actual_total_transaction =
+        stripeFees + partner_should_recieve + ibeauty_connect_takes;
+      const amount_to_transfer = Math.round(
+        parseFloat(partner_should_recieve) * 100
+      );
+
+      const transfer = await stripe.transfers.create({
+        amount: amount_to_transfer,
+        currency: "usd",
+        source_transaction: stripe_charge_id,
+        destination: partner_stripe_id
+      });
+
+      const cart = await Cart.findOne({
+        _id: cartId
+      });
+      cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
+      cart.stripe_transfer_id = transfer.id;
+      cart.dateCheckedIn = today;
+      cart.orderIsComplete = true;
+      cart.save();
+
+      return httpRespond.authRespond(res, {
+        status: true
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e.message
+      });
+    }
+  });
+
   app.get("/api/messages/:clientId", async (req, res) => {
     const messages = await Message.find({
       client: req.params.clientId,
