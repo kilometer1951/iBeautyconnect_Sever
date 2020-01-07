@@ -131,8 +131,8 @@ module.exports = app => {
         newDate +
         " at " +
         booking_time +
-        " has cancelled their appoitment. The good news is you got paid a cancellation fee of $" +
-        partner_takes +
+        " has cancelled their appoitment. The good news is that you got paid a cancellation fee of $" +
+        amount_to_transfer +
         ". Thanks for using iBeautyConnect";
       smsFunctions.sendSMS("req", "res", partnerPhone, message);
 
