@@ -253,6 +253,8 @@ module.exports = app => {
           smsFunctions.sendSMS(req, res, client_phone_number, clientMessage);
         }
       });
+      console.log(dateTime);
+      console.log(job);
       //return back to user
       return httpRespond.authRespond(res, {
         status: true
