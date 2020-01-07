@@ -21,6 +21,11 @@ module.exports = (app, io) => {
       console.log(check_in);
     });
 
+    socket.on("cancelAppoitment", async function(cancelAppoitmentData) {
+      io.emit("cancelAppoitment", { cancelAppoitmentData });
+      console.log(cancelAppoitmentData);
+    });
+
     socket.on("reSchedule", async function(reScheduleData) {
       io.emit("reSchedule", { reScheduleData });
       const {
