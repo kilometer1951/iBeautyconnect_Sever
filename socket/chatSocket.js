@@ -21,7 +21,7 @@ module.exports = (app, io) => {
         //send sms
         messageBody =
           msg.message +
-          ". Open the iBeautyConnect app to respond to your clients request. iBeautyConnectPartner://get_started thanks.";
+          ". Open the iBeautyConnect app to respond to your clients request. iBeautyConnectPartner://messages thanks.";
         smsFunctions.sendSMS("req", "res", msg.partnerPhone, messageBody);
       }
 

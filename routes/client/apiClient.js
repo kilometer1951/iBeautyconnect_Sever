@@ -78,7 +78,9 @@ module.exports = app => {
         partnerId,
         partnerPhone,
         stripe_charge_id,
-        total
+        total,
+        booking_date,
+        booking_time
       } = req.body.cancelAppoitmentData;
 
       const stripeFees = parseFloat(total) * 0.029 + 0.3;
@@ -122,9 +124,17 @@ module.exports = app => {
       cart.stripe_refund_id = refund.id;
       cart.stripe_transfer_id = transfer.id;
       cart.save();
-
-      console.log(refund);
-      console.log(transfer);
+      //send sms
+      const newDate = moment(new Date(booking_date)).format("MMM DD, YYYY");
+      let message =
+        "Looks like your client for " +
+        newDate +
+        " at " +
+        booking_time +
+        " has cancelled their appoitment. The good news is you got paid a cancellation fee of $" +
+        partner_takes +
+        ". Thanks for using iBeautyConnect";
+      smsFunctions.sendSMS("req", "res", msg.partnerPhone, message);
 
       return httpRespond.authRespond(res, {
         status: true
@@ -177,7 +187,6 @@ module.exports = app => {
           ":00";
       let dateTime = new Date(bookingDate + " " + outputTime);
       let MS_PER_MINUTE = 60000;
-      let oneHourBefore = new Date(dateTime - 60 * MS_PER_MINUTE);
       let thirtyMinuteBefore = new Date(dateTime - 30 * MS_PER_MINUTE);
       let tenMinuteBefore = new Date(dateTime - 10 * MS_PER_MINUTE);
       //end date time calculation
@@ -199,28 +208,12 @@ module.exports = app => {
       smsFunctions.sendSMS(req, res, partner_phone_number, messageBody);
 
       // scheduling
-      let j_one_hour_before = schedule.scheduleJob(
-        cartId + "oneHourBefore",
-        oneHourBefore,
-        function() {
-          if (!cart.hasRescheduled) {
-            let partnerMessage = `Appointment reminder. This is a quick reminder of your appointment with ${client_name} on ${newDate} at ${bookingTime}. Do not forget to tell your client to check in through the app thanks iBeautyConnect`;
-            let clientMessage = `Appointment reminder. This is a quick reminder of your appointment with ${partner_name} on ${newDate} at ${bookingTime}. Do not forget to check in through the app thanks iBeautyConnect`;
-            smsFunctions.sendSMS(
-              req,
-              res,
-              partner_phone_number,
-              partnerMessage
-            );
-            smsFunctions.sendSMS(req, res, client_phone_number, clientMessage);
-          }
-        }
-      );
+
       let j_30_minute_before = schedule.scheduleJob(
         cartId + "thirtyMinuteBefore",
         thirtyMinuteBefore,
         function() {
-          if (!cart.hasRescheduled) {
+          if (!cart.hasRescheduled || !cart.hasCanceled) {
             let partnerMessage = `Appointment reminder. This is a quick reminder of your appointment with ${client_name} on ${newDate} at ${bookingTime}. Do not forget to tell your client to check in through the app thanks iBeautyConnect`;
             let clientMessage = `Appointment reminder. This is a quick reminder of your appointment with ${partner_name} on ${newDate} at ${bookingTime}. Do not forget to check in through the app thanks iBeautyConnect`;
             smsFunctions.sendSMS(
@@ -238,7 +231,7 @@ module.exports = app => {
         cartId + "tenMinuteBefore",
         tenMinuteBefore,
         function() {
-          if (!cart.hasRescheduled) {
+          if (!cart.hasRescheduled || !cart.hasCanceled) {
             let partnerMessage = `Appointment reminder. This is a quick reminder of your appointment with ${client_name} on ${newDate} at ${bookingTime}. Do not forget to tell your client to check in through the app thanks iBeautyConnect`;
             let clientMessage = `Appointment reminder. This is a quick reminder of your appointment with ${partner_name} on ${newDate} at ${bookingTime}. Do not forget to check in through the app thanks iBeautyConnect`;
             smsFunctions.sendSMS(
@@ -251,6 +244,15 @@ module.exports = app => {
           }
         }
       );
+
+      let job = schedule.scheduleJob(cartId + "job", dateTime, function() {
+        if (!cart.hasRescheduled || !cart.hasCanceled) {
+          let partnerMessage = `Appointment reminder. It's time for your appointment with ${client_name}. Do not forget to tell your client to check in through the app thanks iBeautyConnect`;
+          let clientMessage = `Appointment reminder. It's time for your appointment with ${partner_name}. Open the iBeautyConnect app to checkin iBeautyConnectClient://appointment_checkin`;
+          smsFunctions.sendSMS(req, res, partner_phone_number, partnerMessage);
+          smsFunctions.sendSMS(req, res, client_phone_number, clientMessage);
+        }
+      });
       //return back to user
       return httpRespond.authRespond(res, {
         status: true
