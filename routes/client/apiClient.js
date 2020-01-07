@@ -134,7 +134,7 @@ module.exports = app => {
         " has cancelled their appoitment. The good news is you got paid a cancellation fee of $" +
         partner_takes +
         ". Thanks for using iBeautyConnect";
-      smsFunctions.sendSMS("req", "res", msg.partnerPhone, message);
+      smsFunctions.sendSMS("req", "res", partnerPhone, message);
 
       return httpRespond.authRespond(res, {
         status: true
