@@ -245,13 +245,13 @@ module.exports = app => {
         }
       );
 
-      let job = schedule.scheduleJob(cartId + "job", dateTime, function() {
-        if (!cart.hasRescheduled || !cart.hasCanceled) {
-          let partnerMessage = `Appointment reminder. It's time for your appointment with ${client_name}. Do not forget to tell your client to check in through the app thanks iBeautyConnect`;
-          let clientMessage = `Appointment reminder. It's time for your appointment with ${partner_name}. Open the iBeautyConnect app to checkin iBeautyConnectClient://appointment_checkin`;
-          smsFunctions.sendSMS(req, res, partner_phone_number, partnerMessage);
-          smsFunctions.sendSMS(req, res, client_phone_number, clientMessage);
-        }
+      let job = schedule.scheduleJob(dateTime, function() {
+        //  if (!cart.hasRescheduled || !cart.hasCanceled) {
+        let partnerMessage = `Appointment reminder. It's time for your appointment with ${client_name}. Do not forget to tell your client to check in through the app thanks iBeautyConnect`;
+        let clientMessage = `Appointment reminder. It's time for your appointment with ${partner_name}. Open the iBeautyConnect app to checkin iBeautyConnectClient://appointment_checkin`;
+        smsFunctions.sendSMS(req, res, partner_phone_number, partnerMessage);
+        smsFunctions.sendSMS(req, res, client_phone_number, clientMessage);
+        //  }
       });
       console.log(dateTime);
       console.log(job);
