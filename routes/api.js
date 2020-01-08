@@ -60,6 +60,24 @@ module.exports = app => {
     });
   });
 
+  app.get("/api/query_agenda_by_date/:clientId/:dateTime", async (req, res) => {
+    const appointments = await Cart.find({
+      client: req.params.clientId,
+      hasCheckedout: true,
+      orderIsComplete: false,
+      hasCanceled: false,
+      booking_date: new Date(req.params.dateTime)
+    })
+      .populate("client")
+      .populate("partner")
+      .sort({ booking_date: -1 });
+
+    return httpRespond.authRespond(res, {
+      status: true,
+      appointments
+    });
+  });
+
   app.get("/api/cart_regular/:clientId/", async (req, res) => {
     try {
       const cart = await Cart.find({
@@ -176,15 +194,11 @@ module.exports = app => {
       } = req.body.checkInData;
 
       const stripeFees = parseFloat(total) * 0.029 + 0.3;
-      const total_left_after_after_stripe = parseFloat(total) - stripeFees;
-      const ibeauty_connect_takes = total_left_after_after_stripe * 0.17;
-      const partner_should_recieve =
-        total_left_after_after_stripe - ibeauty_connect_takes;
-      const actual_total_transaction =
-        stripeFees + partner_should_recieve + ibeauty_connect_takes;
-      const amount_to_transfer = Math.round(
-        parseFloat(partner_should_recieve) * 100
-      );
+      const partner_takes = Math.round(parseFloat(total) * 0.8);
+      const ibeauty_connect_takes =
+        parseFloat(total) - partner_takes - stripeFees;
+
+      const amount_to_transfer = Math.round(parseFloat(partner_takes) * 100);
 
       const transfer = await stripe.transfers.create({
         amount: amount_to_transfer,
@@ -197,10 +211,14 @@ module.exports = app => {
         _id: cartId
       });
       cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
+      cart.stripe_takes = stripeFees.toFixed(2);
+      cart.partner_takes = partner_takes.toFixed(2);
       cart.stripe_transfer_id = transfer.id;
       cart.dateCheckedIn = today;
       cart.orderIsComplete = true;
       cart.save();
+
+      //send notificiation to user to be done
 
       return httpRespond.authRespond(res, {
         status: true
@@ -209,7 +227,7 @@ module.exports = app => {
       console.log(e);
       return httpRespond.authRespond(res, {
         status: false,
-        message: e.message
+        message: e
       });
     }
   });
@@ -258,3 +276,13 @@ module.exports = app => {
     });
   });
 };
+
+//side note
+
+//
+// const percentage = 0.168 + 0.029;
+// const totalPercentage_plus_30cents = parseFloat(
+//   (percentage * 100).toFixed(2)
+// );
+// const totalPercentage = totalPercentage_plus_30cents + 0.3;
+// console.log(totalPercentage / 100);

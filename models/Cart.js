@@ -21,12 +21,17 @@ const cartSchema = new Schema({
   stripe_refund_id: { type: String, default: "" },
   ibeauty_connect_takes: { type: String, default: "" },
   comfort_fee: { type: String, default: "" },
+  comfortFeeAddress: { type: String, default: "" },
   stripe_transfer_id: { type: String, default: "" },
   hasCanceled: { type: Boolean, default: false },
   hasRescheduled: { type: Boolean, default: false },
-  iBeautyConnect_cancellation_fee_received: { type: String, default: "" },
-  partner_cancellation_fee_received: { type: String, default: "" },
-  client_cancellation_fee_received: { type: String, default: "" }
+  partner_takes: { type: String, default: "" },
+  stripe_takes: { type: String, default: "" },
+  client_cancellation_fee_received: { type: String, default: "" },
+  client_cancellation_fee_description: {
+    type: String,
+    default: "20% for iBC, 30% to client and 50% to partner"
+  }
 });
 
 mongoose.model("carts", cartSchema);
