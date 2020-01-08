@@ -11,9 +11,14 @@ module.exports = (app, io) => {
   io.on("connection", function(socket) {
     //    console.log("user connected");
 
+    socket.on("addedToCart", async function(clientId) {
+      io.emit("addedToCart", { clientId });
+      console.log(clientId);
+    });
+
     socket.on("newOrder", async function(order) {
-      io.emit("newOrder", { order });
-      console.log(order);
+      io.emit("newOrder", order);
+      console.log(order.from);
     });
 
     socket.on("checkIn", async function(check_in) {

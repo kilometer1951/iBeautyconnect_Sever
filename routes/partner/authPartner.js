@@ -60,6 +60,23 @@ module.exports = app => {
     //   { default_for_currency: false }
     // );
     // console.log(update);
+
+    const balance = await stripe.balance.retrieve({
+      stripe_account: "acct_1Ft3RWEFG0p535eY"
+    });
+    const amount = balance.pending[0].amount;
+    //
+    const pay = await stripe.payouts.create(
+      {
+        amount: amount,
+        currency: "usd",
+        method: "instant"
+      },
+      { stripe_account: "acct_1Ft3RWEFG0p535eY" }
+    );
+    console.log(pay);
+
+    res.send(pay);
   });
 
   app.post("/auth/verification", async (req, res) => {

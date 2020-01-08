@@ -97,6 +97,25 @@ module.exports = app => {
     }
   });
 
+  app.get("/api/order_again/:clientId/", async (req, res) => {
+    try {
+      const cart = await Cart.find({
+        client: req.params.clientId,
+        hasCheckedout: true,
+        orderIsComplete: true
+      }).populate("partner");
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        cart
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
+  });
+
   app.post("/api/add_to_cart", async (req, res) => {
     try {
       const cartExist = await Cart.findOne({
@@ -256,7 +275,8 @@ module.exports = app => {
 
     return httpRespond.authRespond(res, {
       status: true,
-      conversations: messages.message_data
+      conversations: messages.message_data,
+      allConversationsData: messages
     });
   });
   app.get("/api/appointments_client/:clientId", async (req, res) => {
