@@ -3,6 +3,7 @@ const Client = mongoose.model("clients");
 const Partner = mongoose.model("partners");
 const Cart = mongoose.model("carts");
 const Message = mongoose.model("messages");
+const Rate = mongoose.model("rates");
 
 const httpRespond = require("../functions/httpRespond");
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
@@ -35,6 +36,72 @@ module.exports = app => {
       });
     }
   );
+
+  app.get("/api/get_reviews/:clientId/:partnerId", async (req, res) => {
+    try {
+      const fiveStar = await Rate.find({
+        partner: mongoose.Types.ObjectId(req.params.partnerId),
+        rateNumber: 5
+      }).countDocuments();
+      const fourStar = await Rate.find({
+        partner: mongoose.Types.ObjectId(req.params.partnerId),
+        rateNumber: 4
+      }).countDocuments();
+      const threeStar = await Rate.find({
+        partner: mongoose.Types.ObjectId(req.params.partnerId),
+        rateNumber: 3
+      }).countDocuments();
+
+      const twoStar = await Rate.find({
+        partner: mongoose.Types.ObjectId(req.params.partnerId),
+        rateNumber: 2
+      }).countDocuments();
+
+      const oneStar = await Rate.find({
+        partner: mongoose.Types.ObjectId(req.params.partnerId),
+        rateNumber: 1
+      }).countDocuments();
+
+      const reviews = await Rate.aggregate([
+        {
+          $match: {
+            partner: mongoose.Types.ObjectId(req.params.partnerId),
+            client: { $eq: mongoose.Types.ObjectId(req.params.clientId) },
+            rateNumber: 5
+          }
+        },
+        { $sample: { size: 10 } },
+        {
+          $lookup: {
+            from: "clients",
+            localField: "client",
+            foreignField: "_id",
+            as: "client"
+          }
+        }
+      ]);
+
+      const totalRating = (
+        (5 * fiveStar +
+          4 * fourStar +
+          3 * threeStar +
+          2 * twoStar +
+          1 * oneStar) /
+        (fiveStar + fourStar + threeStar + twoStar + oneStar)
+      ).toFixed(2);
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        reviews,
+        totalRating
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
+  });
 
   app.get("/api/cart_count/:clientId/", async (req, res) => {
     const cart_count = await Cart.find({
@@ -209,7 +276,8 @@ module.exports = app => {
         today,
         total,
         booking_date,
-        booking_time
+        booking_time,
+        clientId
       } = req.body.checkInData;
 
       const stripeFees = parseFloat(total) * 0.029 + 0.3;
@@ -236,6 +304,15 @@ module.exports = app => {
       cart.dateCheckedIn = today;
       cart.orderIsComplete = true;
       cart.save();
+
+      //update messages by removing from list
+      const message = await Message.findOne({
+        client: clientId,
+        partner: partnerId,
+        deleted: false
+      });
+      message.deleted = true;
+      message.save();
 
       //send notificiation to user to be done
 
@@ -294,6 +371,28 @@ module.exports = app => {
       status: true,
       appointments
     });
+  });
+
+  app.post("/api/add_rating", async (req, res) => {
+    try {
+      const { partnerId, clientId, comment, rateNumber } = req.body.rateData;
+      newReview = {
+        partner: partnerId,
+        client: clientId,
+        comment: comment,
+        rateNumber: rateNumber
+      };
+      const r = await new Rate(newReview).save();
+      console.log(r);
+      return httpRespond.authRespond(res, {
+        status: true
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
   });
 };
 

@@ -61,7 +61,8 @@ module.exports = app => {
         name: req.body.name,
         phone: req.body.phone,
         email: req.body.email,
-        stripeId: customer.id
+        stripeId: customer.id,
+        points: 100
       };
       const createdUser = await new Client(newUser).save();
       console.log(createdUser);

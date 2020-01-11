@@ -9,7 +9,10 @@ let partnerSchema = new Schema({
   phone: String,
   email: String,
   password: String,
-  profilePhoto: { type: String, default: "" },
+  profilePhoto: {
+    type: String,
+    default: "https://oarnation.com/content/no-picture.jpg"
+  },
   hasGoneThroughFinalScreen: { type: Boolean, default: false },
   introScreen: { type: Boolean, default: false },
   profession: { type: String, default: "" },
@@ -52,7 +55,8 @@ let partnerSchema = new Schema({
   staffHandler: String,
   dob: { type: Date, default: Date.now },
   service_gender: { type: String, default: "" },
-  photoId: { type: String, default: "" }
+  photoId: { type: String, default: "" },
+  points: { type: Number, default: 0 }
 });
 
 mongoose.model("partners", partnerSchema);

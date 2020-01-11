@@ -21,9 +21,9 @@ module.exports = (app, io) => {
       console.log(order.from);
     });
 
-    socket.on("checkIn", async function(check_in) {
-      io.emit("checkIn", { check_in });
-      console.log(check_in);
+    socket.on("checkIn", async function(checkInData) {
+      io.emit("checkIn", checkInData);
+      console.log(checkInData);
     });
 
     socket.on("cancelAppoitment", async function(cancelAppoitmentData) {

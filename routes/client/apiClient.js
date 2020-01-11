@@ -27,6 +27,37 @@ module.exports = app => {
     }
   });
 
+  app.get("/api_client/loadCustomSearch/:clientId", async (req, res) => {
+    try {
+      const client = await Client.findOne({ _id: req.params.clientId });
+      const partners = await Partner.aggregate([
+        {
+          $match: {
+            $or: [
+              { locationCity: client.searchByCity },
+              { locationState: client.searchByState },
+              { profession: client.profession },
+              { service_gender: client.searchByGender }
+            ]
+          }
+        }, // filter the results
+        { $sample: { size: 10 } }
+      ]);
+
+      //  res.send(partners);
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        partners
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: true,
+        message: e
+      });
+    }
+  });
+
   app.get("/api/get_client_cards/:stripeId", async (req, res) => {
     const cards = await stripe.customers.listSources(req.params.stripeId, {});
     return httpRespond.authRespond(res, {

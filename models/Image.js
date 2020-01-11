@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const imageSchema = new Schema({
-  belongsTo: { type: Schema.Types.ObjectId, ref: "users" },
+  belongsTo: { type: Schema.Types.ObjectId, ref: "partners" },
   path: String,
   imageApproval: { type: Boolean, default: true },
   cloudinaryId: String,

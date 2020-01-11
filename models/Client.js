@@ -7,7 +7,10 @@ let clientSchema = new Schema({
   name: String,
   phone: String,
   email: String,
-  profilePhoto: String,
+  profilePhoto: {
+    type: String,
+    default: "https://oarnation.com/content/no-picture.jpg"
+  },
   search: { type: String, default: "all" },
   locationState: { type: String, default: "" },
   locationCity: { type: String, default: "" },
@@ -16,7 +19,8 @@ let clientSchema = new Schema({
   searchByCity: { type: String, default: "" },
   searchByState: { type: String, default: "" },
   searchByGender: { type: String, default: "" },
-  stripeId: { type: String, default: "" }
+  stripeId: { type: String, default: "" },
+  points: { type: Number, default: 0 }
 });
 
 mongoose.model("clients", clientSchema);

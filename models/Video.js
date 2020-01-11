@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const videoSchema = new Schema({
-  belongsTo: { type: Schema.Types.ObjectId, ref: "users" },
+  belongsTo: { type: Schema.Types.ObjectId, ref: "partners" },
   path: String,
   videoApproval: { type: Boolean, default: true },
   cloudinaryId: String,

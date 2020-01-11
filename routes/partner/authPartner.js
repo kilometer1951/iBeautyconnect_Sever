@@ -114,6 +114,7 @@ module.exports = app => {
       lName: req.body.lName,
       phone: req.body.phone,
       email: req.body.email,
+      points: 50,
       password: password.encryptPassword(req.body.password),
       licenseDocument: [
         {
