@@ -66,7 +66,7 @@ module.exports = app => {
         {
           $match: {
             partner: mongoose.Types.ObjectId(req.params.partnerId),
-            client: { $eq: mongoose.Types.ObjectId(req.params.clientId) },
+            client: { $ne: mongoose.Types.ObjectId(req.params.clientId) },
             rateNumber: 5
           }
         },
