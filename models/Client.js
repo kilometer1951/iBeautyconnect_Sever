@@ -15,6 +15,7 @@ let clientSchema = new Schema({
   locationState: { type: String, default: "" },
   locationCity: { type: String, default: "" },
   address: { type: String, default: "" },
+  country: { type: String, default: "" },
   postal_code: { type: String, default: "" },
   searchByCity: { type: String, default: "" },
   searchByState: { type: String, default: "" },

@@ -56,7 +56,13 @@ let partnerSchema = new Schema({
   dob: { type: Date, default: Date.now },
   service_gender: { type: String, default: "" },
   photoId: { type: String, default: "" },
-  points: { type: Number, default: 0 }
+  points: { type: Number, default: 0 },
+  image1: String,
+  image2: String,
+  image3: String,
+  image4: String,
+  image5: String,
+  country: { type: String, default: "" }
 });
 
 mongoose.model("partners", partnerSchema);

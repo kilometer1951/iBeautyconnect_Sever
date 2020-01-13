@@ -13,7 +13,7 @@ const smsFunctions = require("../../functions/SMS");
 module.exports = app => {
   app.get("/api_client/loadAllPartners", async (req, res) => {
     try {
-      const partners = await Partner.find({});
+      const partners = await Partner.aggregate([{ $sample: { size: 20 } }]);
 
       return httpRespond.authRespond(res, {
         status: true,
@@ -41,7 +41,7 @@ module.exports = app => {
             ]
           }
         }, // filter the results
-        { $sample: { size: 10 } }
+        { $sample: { size: 20 } }
       ]);
 
       //  res.send(partners);
