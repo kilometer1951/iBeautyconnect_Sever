@@ -18,6 +18,10 @@ require("./models/Cart");
 require("./models/Message");
 require("./models/Rate");
 
+require("./models/Country");
+require("./models/State");
+require("./models/City");
+
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

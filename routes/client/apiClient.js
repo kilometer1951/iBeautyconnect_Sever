@@ -24,7 +24,7 @@ module.exports = app => {
       });
     } catch (e) {
       return httpRespond.authRespond(res, {
-        status: true,
+        status: false,
         message: e
       });
     }
@@ -36,12 +36,9 @@ module.exports = app => {
       const partners = await Partner.aggregate([
         {
           $match: {
-            $or: [
-              { locationCity: client.searchByCity },
-              { locationState: client.searchByState },
-              { profession: client.profession },
-              { service_gender: client.searchByGender }
-            ]
+            locationCity: { $regex: client.searchByCity },
+            locationState: { $regex: client.searchByState },
+            profession: { $regex: client.searchByProfession }
           }
         }, // filter the results
         { $sample: { size: 20 } }
@@ -54,8 +51,51 @@ module.exports = app => {
         partners
       });
     } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+
+  app.post("/api/filter_professionals", async (req, res) => {
+    try {
+      const client = await Client.findOne({ _id: req.body.clientId });
+      const partners = await Partner.aggregate([
+        {
+          $match: {
+            locationCity: { $regex: req.body.searchByCity },
+            locationState: { $regex: req.body.searchByState },
+            profession: { $regex: req.body.searchByProfession }
+          }
+        }, // filter the results
+        { $sample: { size: 20 } }
+      ]);
+
+      console.log(partners.length);
+
+      //update back end for client search
+      if (partners.length !== 0) {
+        //update search
+        client.searchByCity = req.body.searchByCity;
+        client.searchByState = req.body.searchByState;
+        client.searchByProfession = req.body.searchByProfession;
+        client.search = "custom";
+        client.save();
+      }
+
+      //  res.send(partners);
+
       return httpRespond.authRespond(res, {
         status: true,
+        partners,
+        hasPartners: partners.length === 0 ? false : true
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
         message: e
       });
     }

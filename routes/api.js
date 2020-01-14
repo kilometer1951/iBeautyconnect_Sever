@@ -5,6 +5,10 @@ const Cart = mongoose.model("carts");
 const Message = mongoose.model("messages");
 const Rate = mongoose.model("rates");
 
+const Country = mongoose.model("countries");
+const State = mongoose.model("states");
+const City = mongoose.model("cities");
+
 const httpRespond = require("../functions/httpRespond");
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 
@@ -386,6 +390,83 @@ module.exports = app => {
       console.log(r);
       return httpRespond.authRespond(res, {
         status: true
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+
+  app.post("/api/country", async (req, res) => {
+    try {
+      const country = await new Country({ country: req.body.country }).save();
+      return httpRespond.authRespond(res, {
+        status: true,
+        country
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+  app.post("/api/state", async (req, res) => {
+    try {
+      const state = await new State({
+        state: req.body.state,
+        country: req.body.country
+      }).save();
+      return httpRespond.authRespond(res, {
+        status: true,
+        state
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+  app.post("/api/city", async (req, res) => {
+    try {
+      const city = await new City({
+        city: req.body.city,
+        state: req.body.state
+      }).save();
+      return httpRespond.authRespond(res, {
+        status: true,
+        city
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+  app.get("/api/states", async (req, res) => {
+    try {
+      const states = await State.find({});
+      return httpRespond.authRespond(res, {
+        status: true,
+        states
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+  app.get("/api/cities/:searchByState", async (req, res) => {
+    try {
+      const cities = await City.find({ state: req.params.searchByState });
+      return httpRespond.authRespond(res, {
+        status: true,
+        cities
       });
     } catch (e) {
       return httpRespond.authRespond(res, {

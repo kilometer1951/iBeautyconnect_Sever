@@ -20,6 +20,7 @@ let clientSchema = new Schema({
   searchByCity: { type: String, default: "" },
   searchByState: { type: String, default: "" },
   searchByGender: { type: String, default: "" },
+  searchByProfession: { type: String, default: "" },
   stripeId: { type: String, default: "" },
   points: { type: Number, default: 0 }
 });
