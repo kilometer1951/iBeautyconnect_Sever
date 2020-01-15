@@ -61,21 +61,35 @@ module.exports = app => {
   });
 
   app.get("/api/images/:userId", async (req, res) => {
-    const images = await Image.find({ belongsTo: req.params.userId });
+    try {
+      const images = await Image.find({ belongsTo: req.params.userId });
 
-    return httpRespond.authRespond(res, {
-      status: true,
-      images
-    });
+      return httpRespond.authRespond(res, {
+        status: true,
+        images
+      });
+    } catch (e) {
+      console.log(req.params.userId);
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
   });
 
   app.get("/api/videos/:userId", async (req, res) => {
-    const videos = await Video.find({ belongsTo: req.params.userId });
-    //  console.log(videos);
-    return httpRespond.authRespond(res, {
-      status: true,
-      videos
-    });
+    try {
+      const videos = await Video.find({ belongsTo: req.params.userId });
+      //  console.log(videos);
+      return httpRespond.authRespond(res, {
+        status: true,
+        videos
+      });
+    } catch (e) {
+      console.log(req.params.userId);
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
   });
 
   app.post("/api/profession", async (req, res) => {

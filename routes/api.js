@@ -315,8 +315,10 @@ module.exports = app => {
         partner: partnerId,
         deleted: false
       });
-      message.deleted = true;
-      message.save();
+      if (message) {
+        message.deleted = true;
+        message.save();
+      }
 
       //send notificiation to user to be done
 
@@ -379,12 +381,19 @@ module.exports = app => {
 
   app.post("/api/add_rating", async (req, res) => {
     try {
-      const { partnerId, clientId, comment, rateNumber } = req.body.rateData;
+      const {
+        partnerId,
+        clientId,
+        comment,
+        rateNumber,
+        cartId
+      } = req.body.rateData;
       newReview = {
         partner: partnerId,
         client: clientId,
         comment: comment,
-        rateNumber: rateNumber
+        rateNumber: rateNumber,
+        cart: cartId
       };
       const r = await new Rate(newReview).save();
       console.log(r);
