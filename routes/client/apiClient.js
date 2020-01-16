@@ -367,12 +367,24 @@ module.exports = app => {
     upload.single("photo"),
     async (req, res) => {
       try {
-        console.log(req.file);
-        const response = await cloudinary.uploader.upload(req.file.path);
         const client = await Client.findOne({ _id: req.params.clientId });
 
-        client.profilePhoto = response.url;
-        client.save();
+        if (client.cloudinaryId === "") {
+          //new upload
+          const response = await cloudinary.uploader.upload(req.file.path);
+          client.profilePhoto = response.url;
+          client.cloudinaryId = response.public_id;
+          client.save();
+        } else {
+          //delete old photo and upload new photo
+          await cloudinary.v2.uploader.destroy(client.cloudinaryId);
+          // //upload new photo
+          const response = await cloudinary.uploader.upload(req.file.path);
+          client.profilePhoto = response.url;
+          client.cloudinaryId = response.public_id;
+          client.save();
+        }
+
         return httpRespond.authRespond(res, {
           status: true,
           message: "upload complete"

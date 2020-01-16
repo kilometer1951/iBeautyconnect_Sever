@@ -22,7 +22,8 @@ let clientSchema = new Schema({
   searchByGender: { type: String, default: "" },
   searchByProfession: { type: String, default: "" },
   stripeId: { type: String, default: "" },
-  points: { type: Number, default: 0 }
+  points: { type: Number, default: 0 },
+  cloudinaryId: { type: String, default: "" }
 });
 
 mongoose.model("clients", clientSchema);
