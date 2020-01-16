@@ -484,6 +484,77 @@ module.exports = app => {
       });
     }
   });
+
+  app.post("/api/new_message/", async (req, res) => {
+    try {
+      //save message
+      const message = await Message.findOne({
+        client: req.body.messageData.clientId,
+        partner: req.body.messageData.partnerId,
+        deleted: false
+      });
+
+      if (req.body.messageData.type == "reschedule") {
+        //send sms
+        messageBody =
+          req.body.messageData.message +
+          ". Open the iBeautyConnect app to respond to your clients request. iBeautyConnectPartner://messages thanks.";
+        smsFunctions.sendSMS(
+          "req",
+          "res",
+          req.body.messageData.partnerPhone,
+          messageBody
+        );
+      }
+
+      if (message) {
+        //update message
+        message.recentMesage = req.body.messageData.message;
+        if (req.body.messageData.to == req.body.messageData.partnerId) {
+          message.partnerHasViewed = false;
+          message.clientHasViewMessage = true;
+        } else {
+          message.clientHasViewMessage = false;
+          message.partnerHasViewed = true;
+        }
+        message.dateModified = new Date();
+        message.save();
+        const update_message = {
+          message: req.body.messageData.message,
+          to: req.body.messageData.to,
+          from: req.body.messageData.from
+        };
+        await Message.update(
+          { _id: message._id },
+          {
+            $push: {
+              message_data: update_message
+            }
+          }
+        );
+      } else {
+        newMessage = {
+          client: req.body.messageData.clientId,
+          partner: req.body.messageData.partnerId,
+          recentMesage: req.body.messageData.message,
+          message_data: {
+            message: req.body.messageData.message,
+            to: req.body.messageData.to,
+            from: req.body.messageData.from
+          }
+        };
+        new Message(newMessage).save();
+      }
+      return httpRespond.authRespond(res, {
+        status: true
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
 };
 
 //side note
