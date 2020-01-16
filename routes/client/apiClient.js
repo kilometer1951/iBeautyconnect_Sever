@@ -29,6 +29,22 @@ cloudinary.config({
 });
 
 module.exports = app => {
+  app.get("/api/get_points/:clientId", async (req, res) => {
+    try {
+      const response = await Client.findOne({ _id: req.params.clientId });
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        points: response.points
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+
   app.get("/api_client/loadAllPartners", async (req, res) => {
     try {
       const partnerCount = await Partner.find({}).countDocuments();
