@@ -23,9 +23,9 @@ const upload = multer({
 
 const cloudinary = require("cloudinary");
 cloudinary.config({
-  cloud_name: "dtfyfl4kz",
-  api_key: "223622844967433",
-  api_secret: "r20BlHgHcoH8h-EznEJPQmG6sZ0"
+  cloud_name: "ibeautyconnect",
+  api_key: "678214445386768",
+  api_secret: "R5OQpKQ93luFxI7lVXZZ_nsUUsk"
 });
 
 module.exports = app => {

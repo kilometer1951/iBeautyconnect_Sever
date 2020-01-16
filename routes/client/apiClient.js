@@ -10,6 +10,24 @@ let messageBody = "";
 const httpRespond = require("../../functions/httpRespond");
 const smsFunctions = require("../../functions/SMS");
 
+const multer = require("multer");
+const storage = multer.diskStorage({
+  filename: function(req, file, callback) {
+    callback(null, Date.now() + file.originalname);
+  }
+});
+const upload = multer({
+  storage: storage,
+  limits: { fieldSize: 25 * 1024 * 1024 }
+});
+
+const cloudinary = require("cloudinary");
+cloudinary.config({
+  cloud_name: "ibeautyconnect",
+  api_key: "678214445386768",
+  api_secret: "R5OQpKQ93luFxI7lVXZZ_nsUUsk"
+});
+
 module.exports = app => {
   app.get("/api_client/loadAllPartners", async (req, res) => {
     try {
@@ -343,4 +361,29 @@ module.exports = app => {
       });
     }
   });
+
+  app.post(
+    "/api/edit_client_photo/:clientId",
+    upload.single("photo"),
+    async (req, res) => {
+      try {
+        console.log(req.file);
+        const response = await cloudinary.uploader.upload(req.file.path);
+        const client = await Client.findOne({ _id: req.params.clientId });
+
+        client.profilePhoto = response.url;
+        client.save();
+        return httpRespond.authRespond(res, {
+          status: true,
+          message: "upload complete"
+        });
+      } catch (e) {
+        console.log(e);
+        return httpRespond.authRespond(res, {
+          status: false,
+          message: e
+        });
+      }
+    }
+  );
 };
