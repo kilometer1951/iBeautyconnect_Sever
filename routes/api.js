@@ -555,6 +555,23 @@ module.exports = app => {
       });
     }
   });
+
+  app.post("/api/delete_card", async (req, res) => {
+    try {
+      const { cardId, stripeId } = req.body.deleteData;
+
+      await stripe.customers.deleteSource(stripeId, cardId);
+      return httpRespond.authRespond(res, {
+        status: true
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
 };
 
 //side note
