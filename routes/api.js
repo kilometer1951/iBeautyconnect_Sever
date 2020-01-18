@@ -8,6 +8,7 @@ const Rate = mongoose.model("rates");
 const Country = mongoose.model("countries");
 const State = mongoose.model("states");
 const City = mongoose.model("cities");
+const Support = mongoose.model("supports");
 
 const httpRespond = require("../functions/httpRespond");
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
@@ -193,6 +194,24 @@ module.exports = app => {
         client: req.params.clientId,
         hasCheckedout: true,
         orderIsComplete: true
+      }).populate("partner");
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        cart
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
+  });
+
+  app.get("/api/cancelled_orders/:clientId/", async (req, res) => {
+    try {
+      const cart = await Cart.find({
+        client: req.params.clientId,
+        hasCanceled: true
       }).populate("partner");
 
       return httpRespond.authRespond(res, {
@@ -543,7 +562,7 @@ module.exports = app => {
           to: req.body.messageData.to,
           from: req.body.messageData.from
         };
-        await Message.update(
+        await Message.updateOne(
           { _id: message._id },
           {
             $push: {
@@ -585,6 +604,77 @@ module.exports = app => {
       });
     } catch (e) {
       console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+
+  app.get("/api/get_supportMessages/:clientId", async (req, res) => {
+    try {
+      const supportMessage = await Support.find({
+        client: req.params.clientId
+      });
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        supportMessage
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+
+  app.post("/api/new_support_message/", async (req, res) => {
+    try {
+      const { clientId, message, to, from_, category } = req.body.messageData;
+      //save message
+      const supportMessage = await Support.findOne({
+        client: clientId,
+        category: category,
+        ticketStatus: "open"
+      });
+
+      if (supportMessage) {
+        //update and do things
+        //update message
+        const update_message = {
+          message: message,
+          to: to,
+          from: from_
+        };
+        await Support.updateOne(
+          { _id: supportMessage._id },
+          {
+            $push: {
+              message_data: update_message
+            }
+          }
+        );
+        return httpRespond.authRespond(res, {
+          status: true
+        });
+      } else {
+        newMessage = {
+          client: clientId,
+          category: category,
+          message_data: {
+            message: message,
+            to: to,
+            from: from_
+          }
+        };
+        new Support(newMessage).save();
+        return httpRespond.authRespond(res, {
+          status: true
+        });
+      }
+    } catch (e) {
       return httpRespond.authRespond(res, {
         status: false,
         message: e

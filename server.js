@@ -21,6 +21,7 @@ require("./models/Rate");
 require("./models/Country");
 require("./models/State");
 require("./models/City");
+require("./models/Support");
 
 app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -47,6 +48,7 @@ require("./routes/client/authClient")(app);
 require("./routes/client/apiClient")(app);
 require("./socket/chatSocket")(app, io);
 require("./socket/appSocket")(app, io);
+require("./socket/supportSocket")(app, io);
 require("./routes/adminApi")(app);
 
 const port = process.env.PORT || 5002;
