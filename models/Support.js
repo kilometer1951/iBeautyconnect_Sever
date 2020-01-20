@@ -15,6 +15,7 @@ const supportSchema = new Schema({
   ],
   rateSupport: { type: Number, default: 0 },
   ticketStatus: { type: String, default: "open" },
-  category: { type: String, default: "" }
+  category: { type: String, default: "" },
+  supportReplied: { type: String, default: "" }
 });
 mongoose.model("supports", supportSchema);

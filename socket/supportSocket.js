@@ -10,7 +10,6 @@ module.exports = (app, io) => {
 
     socket.on("newSupportMessage", async function(messageData) {
       io.emit("newSupportMessage", messageData);
-      console.log(messageData);
     });
 
     socket.on("disconnect", function() {

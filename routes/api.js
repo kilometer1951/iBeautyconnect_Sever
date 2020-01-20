@@ -614,12 +614,32 @@ module.exports = app => {
   app.get("/api/get_supportMessages/:clientId", async (req, res) => {
     try {
       const supportMessage = await Support.find({
-        client: req.params.clientId
+        client: req.params.clientId,
+        ticketStatus: "open"
       });
 
       return httpRespond.authRespond(res, {
         status: true,
         supportMessage
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+
+  app.get("/api/get_supportConvo/:supportMessageId", async (req, res) => {
+    try {
+      const supportConvo = await Support.findOne({
+        _id: req.params.supportMessageId
+      });
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        supportConvo
       });
     } catch (e) {
       console.log(e);
