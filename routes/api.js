@@ -13,6 +13,9 @@ const Support = mongoose.model("supports");
 const httpRespond = require("../functions/httpRespond");
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 
+const smsFunctions = require("../functions/SMS");
+let messageBody = "";
+
 module.exports = app => {
   app.get(
     "/api/check_cart/:clientId/:partnerId/:serviceId",
