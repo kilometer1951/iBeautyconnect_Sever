@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Client = mongoose.model("clients");
 const Partner = mongoose.model("partners");
 const Cart = mongoose.model("carts");
+const Message = mongoose.model("messages");
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const moment = require("moment");
 const schedule = require("node-schedule");
@@ -181,6 +182,7 @@ module.exports = app => {
   app.post("/api/cancel_appoitment/", async (req, res) => {
     try {
       const {
+        clientId,
         cartId,
         partner_stripe_id,
         partnerId,
@@ -239,6 +241,17 @@ module.exports = app => {
         partner_takes.toFixed(2) +
         ". Thanks for using iBeautyConnect";
       smsFunctions.sendSMS("req", "res", partnerPhone, message);
+
+      //update messages by removing from list
+      const message = await Message.findOne({
+        client: clientId,
+        partner: partnerId,
+        deleted: false
+      });
+      if (message) {
+        message.deleted = true;
+        message.save();
+      }
 
       return httpRespond.authRespond(res, {
         status: true
