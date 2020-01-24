@@ -48,7 +48,10 @@ module.exports = app => {
 
   app.get("/api_client/loadAllPartners", async (req, res) => {
     try {
-      const partnerCount = await Partner.find({}).countDocuments();
+      const partnerCount = await Partner.find({
+        isApproved: true,
+        hasGoneThroughFinalScreen: true
+      }).countDocuments();
       const partners = await Partner.aggregate([
         { $sample: { size: partnerCount } }
       ]);
@@ -71,6 +74,8 @@ module.exports = app => {
       const partners = await Partner.aggregate([
         {
           $match: {
+            isApproved: true,
+            hasGoneThroughFinalScreen: true,
             locationCity: { $regex: client.searchByCity },
             locationState: { $regex: client.searchByState },
             profession: { $regex: client.searchByProfession }
@@ -243,14 +248,14 @@ module.exports = app => {
       smsFunctions.sendSMS("req", "res", partnerPhone, message);
 
       //update messages by removing from list
-      const message = await Message.findOne({
+      const updatedMessage = await Message.findOne({
         client: clientId,
         partner: partnerId,
         deleted: false
       });
-      if (message) {
-        message.deleted = true;
-        message.save();
+      if (updatedMessage) {
+        updatedMessage.deleted = true;
+        updatedMessage.save();
       }
 
       return httpRespond.authRespond(res, {

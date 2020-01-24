@@ -17,11 +17,10 @@ const upload = multer({ storage: storage });
 
 const cloudinary = require("cloudinary");
 cloudinary.config({
-  cloud_name: "dtfyfl4kz",
-  api_key: "223622844967433",
-  api_secret: "r20BlHgHcoH8h-EznEJPQmG6sZ0"
+  cloud_name: "ibeautyconnect",
+  api_key: "678214445386768",
+  api_secret: "R5OQpKQ93luFxI7lVXZZ_nsUUsk"
 });
-
 const httpRespond = require("../../functions/httpRespond");
 
 module.exports = app => {
@@ -62,14 +61,23 @@ module.exports = app => {
 
   app.get("/api/images/:userId", async (req, res) => {
     try {
-      const images = await Image.find({ belongsTo: req.params.userId });
+      let per_page = 15;
+      let page_no = parseInt(req.query.page);
+      let pagination = {
+        limit: per_page,
+        skip: per_page * (page_no - 1)
+      };
+      const images = await Image.find({ belongsTo: req.params.userId })
+        .limit(pagination.limit)
+        .skip(pagination.skip);
 
       return httpRespond.authRespond(res, {
         status: true,
-        images
+        images,
+        endOfFile: images.length === 0 ? true : false
       });
     } catch (e) {
-      console.log(req.params.userId);
+      console.log(e);
       return httpRespond.authRespond(res, {
         status: false
       });
@@ -78,11 +86,19 @@ module.exports = app => {
 
   app.get("/api/videos/:userId", async (req, res) => {
     try {
-      const videos = await Video.find({ belongsTo: req.params.userId });
-      //  console.log(videos);
+      let per_page = 15;
+      let page_no = parseInt(req.query.page);
+      let pagination = {
+        limit: per_page,
+        skip: per_page * (page_no - 1)
+      };
+      const videos = await Video.find({ belongsTo: req.params.userId })
+        .limit(pagination.limit)
+        .skip(pagination.skip);
       return httpRespond.authRespond(res, {
         status: true,
-        videos
+        videos,
+        endOfFile: videos.length === 0 ? true : false
       });
     } catch (e) {
       console.log(req.params.userId);
@@ -187,20 +203,27 @@ module.exports = app => {
     "/api/upload_images/:userId",
     upload.single("upload"),
     async (req, res) => {
-      const response = await cloudinary.uploader.upload(req.file.path);
-      //save images
-      const newImage = {
-        belongsTo: req.params.userId,
-        path: response.url,
-        imageApproval: true,
-        cloudinaryId: response.public_id
-      };
-      const image = await new Image(newImage).save();
-      //  console.log(image);
-      return httpRespond.authRespond(res, {
-        status: true,
-        image
-      });
+      try {
+        const response = await cloudinary.uploader.upload(req.file.path);
+        //  save images
+        const newImage = {
+          belongsTo: req.params.userId,
+          path: response.url,
+          imageApproval: true,
+          cloudinaryId: response.public_id
+        };
+        const image = await new Image(newImage).save();
+        return httpRespond.authRespond(res, {
+          status: true,
+          image
+        });
+      } catch (e) {
+        console.log(e);
+        return httpRespond.authRespond(res, {
+          status: true,
+          message: e
+        });
+      }
     }
   );
   app.post(

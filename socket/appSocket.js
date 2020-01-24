@@ -32,7 +32,7 @@ module.exports = (app, io) => {
     });
 
     socket.on("cancelAppoitment", async function(cancelAppoitmentData) {
-      io.emit("cancelAppoitment", { cancelAppoitmentData });
+      io.emit("cancelAppoitment", cancelAppoitmentData);
       console.log(cancelAppoitmentData);
     });
 
