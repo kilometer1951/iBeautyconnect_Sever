@@ -172,17 +172,27 @@ module.exports = app => {
     }
   });
 
-  app.get("/api/order_again/:clientId/", async (req, res) => {
+  app.get("/api/order_again/:clientId", async (req, res) => {
     try {
+      let per_page = 15;
+      let page_no = parseInt(req.query.page);
+      let pagination = {
+        limit: per_page,
+        skip: per_page * (page_no - 1)
+      };
       const cart = await Cart.find({
         client: req.params.clientId,
         hasCheckedout: true,
         orderIsComplete: true
-      }).populate("partner");
+      })
+        .populate("partner")
+        .limit(pagination.limit)
+        .skip(pagination.skip);
 
       return httpRespond.authRespond(res, {
         status: true,
-        cart
+        cart,
+        endOfFile: cart.length === 0 ? true : false
       });
     } catch (e) {
       return httpRespond.authRespond(res, {
@@ -193,15 +203,25 @@ module.exports = app => {
 
   app.get("/api/order_history/:clientId/", async (req, res) => {
     try {
+      let per_page = 15;
+      let page_no = parseInt(req.query.page);
+      let pagination = {
+        limit: per_page,
+        skip: per_page * (page_no - 1)
+      };
       const cart = await Cart.find({
         client: req.params.clientId,
         hasCheckedout: true,
         orderIsComplete: true
-      }).populate("partner");
+      })
+        .populate("partner")
+        .limit(pagination.limit)
+        .skip(pagination.skip);
 
       return httpRespond.authRespond(res, {
         status: true,
-        cart
+        cart,
+        endOfFile: cart.length === 0 ? true : false
       });
     } catch (e) {
       return httpRespond.authRespond(res, {
@@ -212,14 +232,24 @@ module.exports = app => {
 
   app.get("/api/cancelled_orders/:clientId/", async (req, res) => {
     try {
+      let per_page = 10;
+      let page_no = parseInt(req.query.page);
+      let pagination = {
+        limit: per_page,
+        skip: per_page * (page_no - 1)
+      };
       const cart = await Cart.find({
         client: req.params.clientId,
         hasCanceled: true
-      }).populate("partner");
+      })
+        .populate("partner")
+        .limit(pagination.limit)
+        .skip(pagination.skip);
 
       return httpRespond.authRespond(res, {
         status: true,
-        cart
+        cart,
+        endOfFile: cart.length === 0 ? true : false
       });
     } catch (e) {
       return httpRespond.authRespond(res, {
