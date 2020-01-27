@@ -160,6 +160,19 @@ module.exports = app => {
     });
   });
 
+  app.post("/api/update_has_viewed_intro_screen", async (req, res) => {
+    const client = await Client.findOne({
+      _id: req.body.userId
+    });
+
+    client.hasViewedIntroModal = true;
+    client.save();
+
+    return httpRespond.authRespond(res, {
+      status: true
+    });
+  });
+
   app.post("/api/add_card/", async (req, res) => {
     try {
       const client = await Client.findOne({
