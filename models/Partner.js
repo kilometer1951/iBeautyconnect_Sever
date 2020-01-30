@@ -31,7 +31,6 @@ let partnerSchema = new Schema({
       path: { type: String, default: "" },
       approved: { type: Boolean, default: false },
       needsAttention: { type: Boolean, default: false },
-      issuedState: { type: String, default: "" },
       expirationDate: { type: Date, default: Date.now }
     }
   ],

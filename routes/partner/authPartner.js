@@ -387,7 +387,6 @@ module.exports = app => {
       user.ssnNumber = req.body.ssnNumber;
       user.introScreen = true;
       user.licenseDocument[0].licenseNumber = req.body.licenseNumber;
-      user.licenseDocument[0].issuedState = req.body.issuedState;
       user.licenseDocument[0].expirationDate = req.body.licenseExpirationDate;
 
       user.save();
