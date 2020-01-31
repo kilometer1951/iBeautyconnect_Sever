@@ -397,7 +397,6 @@ module.exports = app => {
         status: true
       });
     } catch (e) {
-      console.log(e);
       return httpRespond.authRespond(res, {
         status: false,
         message: e

@@ -24,6 +24,7 @@ const cartSchema = new Schema({
   comfortFeeAddress: { type: String, default: "" },
   stripe_transfer_id: { type: String, default: "" },
   hasCanceled: { type: Boolean, default: false },
+  hasCanceledUser: { type: String, default: "" },
   hasRescheduled: { type: Boolean, default: false },
   partner_takes: { type: String, default: "" },
   stripe_takes: { type: String, default: "" },

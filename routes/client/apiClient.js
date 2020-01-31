@@ -49,10 +49,15 @@ module.exports = app => {
   app.get("/api_client/loadAllPartners", async (req, res) => {
     try {
       const partnerCount = await Partner.find({
-        isApproved: true,
-        hasGoneThroughFinalScreen: true
+        isApproved: true
       }).countDocuments();
       const partners = await Partner.aggregate([
+        {
+          $match: {
+            isApproved: true,
+            hasGoneThroughFinalScreen: true
+          }
+        },
         { $sample: { size: partnerCount } }
       ]);
 
@@ -84,7 +89,7 @@ module.exports = app => {
         { $sample: { size: 20 } }
       ]);
 
-      //  res.send(partners);
+      console.log(partners);
 
       return httpRespond.authRespond(res, {
         status: true,

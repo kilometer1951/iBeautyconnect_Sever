@@ -447,4 +447,163 @@ module.exports = app => {
       }
     }
   );
+
+  app.post(
+    "/api/upload_best_five/:partnerId",
+    upload.single("fileName"),
+    async (req, res) => {
+      try {
+        const partner = await Partner.findOne({ _id: req.params.partnerId });
+        if (req.body.display === "image1") {
+          if (partner.cloudinaryId_image1 === "") {
+            //new upload
+            const response = await cloudinary.uploader.upload(req.file.path);
+            partner.image1 = response.url;
+            partner.cloudinaryId_image1 = response.public_id;
+            partner.save();
+          } else {
+            //delete old photo and upload new photo
+            await cloudinary.v2.uploader.destroy(partner.cloudinaryId_image1);
+            // //upload new photo
+            const response = await cloudinary.uploader.upload(req.file.path);
+            partner.image1 = response.url;
+            partner.cloudinaryId_image1 = response.public_id;
+            partner.save();
+          }
+          return httpRespond.authRespond(res, {
+            status: true,
+            message: "upload complete"
+          });
+        }
+        if (req.body.display === "image2") {
+          if (partner.cloudinaryId_image2 === "") {
+            //new upload
+            const response = await cloudinary.uploader.upload(req.file.path);
+            partner.image2 = response.url;
+            partner.cloudinaryId_image2 = response.public_id;
+            partner.save();
+          } else {
+            //delete old photo and upload new photo
+            await cloudinary.v2.uploader.destroy(partner.cloudinaryId_image2);
+            // //upload new photo
+            const response = await cloudinary.uploader.upload(req.file.path);
+            partner.image2 = response.url;
+            partner.cloudinaryId_image2 = response.public_id;
+            partner.save();
+          }
+          return httpRespond.authRespond(res, {
+            status: true,
+            message: "upload complete"
+          });
+        }
+        if (req.body.display === "image3") {
+          if (partner.cloudinaryId_image3 === "") {
+            //new upload
+            const response = await cloudinary.uploader.upload(req.file.path);
+            partner.image3 = response.url;
+            partner.cloudinaryId_image3 = response.public_id;
+            partner.save();
+          } else {
+            //delete old photo and upload new photo
+            await cloudinary.v2.uploader.destroy(partner.cloudinaryId_image3);
+            // //upload new photo
+            const response = await cloudinary.uploader.upload(req.file.path);
+            partner.image3 = response.url;
+            partner.cloudinaryId_image3 = response.public_id;
+            partner.save();
+          }
+          return httpRespond.authRespond(res, {
+            status: true,
+            message: "upload complete"
+          });
+        }
+        if (req.body.display === "image4") {
+          if (partner.cloudinaryId_image4 === "") {
+            //new upload
+            const response = await cloudinary.uploader.upload(req.file.path);
+            partner.image4 = response.url;
+            partner.cloudinaryId_image4 = response.public_id;
+            partner.save();
+          } else {
+            //delete old photo and upload new photo
+            await cloudinary.v2.uploader.destroy(partner.cloudinaryId_image4);
+            // //upload new photo
+            const response = await cloudinary.uploader.upload(req.file.path);
+            partner.image4 = response.url;
+            partner.cloudinaryId_image4 = response.public_id;
+            partner.save();
+          }
+          return httpRespond.authRespond(res, {
+            status: true,
+            message: "upload complete"
+          });
+        }
+        if (req.body.display === "image5") {
+          if (partner.cloudinaryId_image5 === "") {
+            //new upload
+            const response = await cloudinary.uploader.upload(req.file.path);
+            partner.image5 = response.url;
+            partner.cloudinaryId_image5 = response.public_id;
+            partner.save();
+          } else {
+            //delete old photo and upload new photo
+            await cloudinary.v2.uploader.destroy(partner.cloudinaryId_image5);
+            // //upload new photo
+            const response = await cloudinary.uploader.upload(req.file.path);
+            partner.image5 = response.url;
+            partner.cloudinaryId_image5 = response.public_id;
+            partner.save();
+          }
+          return httpRespond.authRespond(res, {
+            status: true,
+            message: "upload complete"
+          });
+        }
+
+        if (req.body.display === "video") {
+          let videoURL;
+          if (partner.cloudinaryId_video === "") {
+            //new upload
+            const response = await cloudinary.v2.uploader.upload(
+              req.file.path,
+              {
+                resource_type: "video"
+              }
+            );
+            partner.salesVideo = response.url;
+            partner.cloudinaryId_video = response.public_id;
+            partner.save();
+            videoURL = response.url;
+          } else {
+            //delete old video and upload new video
+            await cloudinary.v2.uploader.destroy(partner.cloudinaryId_video, {
+              resource_type: "video"
+            });
+            // //upload new photo
+            const response = await cloudinary.v2.uploader.upload(
+              req.file.path,
+              {
+                resource_type: "video"
+              }
+            );
+            partner.salesVideo = response.url;
+            partner.cloudinaryId_video = response.public_id;
+            partner.save();
+            videoURL = response.url;
+          }
+          return httpRespond.authRespond(res, {
+            status: true,
+            message: "upload complete",
+            videoURL
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        return httpRespond.authRespond(res, {
+          status: false,
+          message: e
+        });
+      }
+    }
+  );
 };
