@@ -100,6 +100,39 @@ module.exports = app => {
     }
   });
 
+  app.post("/auth/verification_phone_forgot_password", async (req, res) => {
+    try {
+      const user = await Partner.findOne({ phone: req.body.phone });
+      const code = Math.floor(Math.random() * 100) + 9000;
+
+      if (!user) {
+        return httpRespond.authRespond(res, {
+          status: false,
+          message: "user does not exist",
+          userFound: false
+        });
+      }
+
+      //  send verification code
+      messageBody = "iBeautyconnect Partner.Your verification code is: " + code;
+      const response = await smsFunctions.verification(
+        req,
+        res,
+        req.body.phone,
+        messageBody,
+        code
+      );
+      console.log(messageBody);
+      return res.send({ status: true, code: code, userFound: true });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e,
+        userFound: false
+      });
+    }
+  });
+
   app.post("/auth/signup", async (req, res) => {
     const user = await Partner.findOne({ phone: req.body.phone });
     if (user) {
@@ -137,6 +170,38 @@ module.exports = app => {
     });
   });
 
+  app.post("/auth/verify_license_number", async (req, res) => {
+    //login
+    try {
+      const user = await Partner.findOne({ phone: req.body.phoneNumber });
+
+      const licenseDocument = user.licenseDocument.filter(function(license) {
+        return license.licenseNumber === req.body.licenseNumber;
+      });
+
+      if (licenseDocument.length === 0) {
+        return httpRespond.authRespond(res, {
+          status: false,
+          message: "license not found",
+          licenseDocument: false
+        });
+      } else {
+        return httpRespond.authRespond(res, {
+          status: true,
+          message: "license found",
+          licenseDocument: true,
+          user
+        });
+      }
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e,
+        licenseDocument: false
+      });
+    }
+  });
+
   app.post("/auth/login", async (req, res) => {
     //login
     const user = await Partner.findOne({ email: req.body.email });
@@ -162,26 +227,8 @@ module.exports = app => {
   });
 
   app.get("/auth/userIsActive/:userId", async (req, res) => {
-    const userFound = await Partner.findOne(
-      { _id: req.params.userId },
-      {
-        isApproved: 1,
-        hasGoneThroughFinalScreen: 1,
-        introScreen: 1,
-        fName: 1,
-        lName: 1,
-        completeBusinessAddress: 1,
-        cardId: 1,
-        debitCardLastFour: 1,
-        bankLastFour: 1,
-        bankId: 1,
-        dob: 1,
-        profilePhoto: 1,
-        profession: 1,
-        liveRequest: 1,
-        photoId: 1
-      }
-    );
+    const userFound = await Partner.findOne({ _id: req.params.userId });
+    console.log(userFound);
     return res.send(userFound);
   });
 
