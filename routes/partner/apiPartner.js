@@ -230,21 +230,41 @@ module.exports = app => {
     "/api/upload_videos/:userId",
     upload.single("upload"),
     async (req, res) => {
-      const response = await cloudinary.v2.uploader.upload(req.file.path, {
-        resource_type: "video"
-      });
-      //save videos
-      const newVideo = {
-        belongsTo: req.params.userId,
-        path: response.url,
-        videoApproval: true,
-        cloudinaryId: response.public_id
-      };
-      const video = await new Video(newVideo).save();
-      return httpRespond.authRespond(res, {
-        status: true,
-        video
-      });
+      try {
+        countVideos = await Video.find({
+          belongsTo: req.params.userId
+        }).countDocuments();
+
+        console.log(countVideos);
+
+        if (countVideos <= 10) {
+          const response = await cloudinary.v2.uploader.upload(req.file.path, {
+            resource_type: "video"
+          });
+          //save videos
+          const newVideo = {
+            belongsTo: req.params.userId,
+            path: response.url,
+            videoApproval: true,
+            cloudinaryId: response.public_id
+          };
+          const video = await new Video(newVideo).save();
+          return httpRespond.authRespond(res, {
+            status: true,
+            video
+          });
+        } else {
+          return httpRespond.authRespond(res, {
+            status: false,
+            message: "max reached. Maximum upload for videos is 5.",
+            video: []
+          });
+        }
+      } catch (e) {
+        return httpRespond.authRespond(res, {
+          status: false
+        });
+      }
     }
   );
 

@@ -76,6 +76,7 @@ module.exports = app => {
   app.get("/api_client/loadCustomSearch/:clientId", async (req, res) => {
     try {
       const client = await Client.findOne({ _id: req.params.clientId });
+
       const partners = await Partner.aggregate([
         {
           $match: {
@@ -89,7 +90,25 @@ module.exports = app => {
         { $sample: { size: 20 } }
       ]);
 
-      console.log(partners);
+      if (partners.length === 0) {
+        //return all partners
+        const partnerCount = await Partner.find({
+          isApproved: true
+        }).countDocuments();
+        const partners = await Partner.aggregate([
+          {
+            $match: {
+              isApproved: true,
+              hasGoneThroughFinalScreen: true
+            }
+          },
+          { $sample: { size: partnerCount } }
+        ]);
+        return httpRespond.authRespond(res, {
+          status: true,
+          partners
+        });
+      }
 
       return httpRespond.authRespond(res, {
         status: true,
