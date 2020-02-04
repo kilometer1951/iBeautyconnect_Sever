@@ -3,6 +3,8 @@ const Profession = mongoose.model("professions");
 const Partner = mongoose.model("partners");
 const Image = mongoose.model("images");
 const Video = mongoose.model("videos");
+const Rate = mongoose.model("rates");
+
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const ip = require("ip");
 
@@ -75,6 +77,35 @@ module.exports = app => {
         status: true,
         images,
         endOfFile: images.length === 0 ? true : false
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
+  });
+
+  app.get("/api/get_partner_review/:partnerId", async (req, res) => {
+    try {
+      let per_page = 15;
+      let page_no = parseInt(req.query.page);
+      let pagination = {
+        limit: per_page,
+        skip: per_page * (page_no - 1)
+      };
+      const reviews = await Rate.find({
+        partner: req.params.partnerId,
+        rateNumber: { $eq: 5 }
+      })
+        .populate("client")
+        .limit(pagination.limit)
+        .skip(pagination.skip);
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        reviews,
+        endOfFile: reviews.length === 0 ? true : false
       });
     } catch (e) {
       console.log(e);
