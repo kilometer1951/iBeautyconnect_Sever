@@ -9,6 +9,7 @@ const Country = mongoose.model("countries");
 const State = mongoose.model("states");
 const City = mongoose.model("cities");
 const Support = mongoose.model("supports");
+const Moment = require("moment");
 
 const httpRespond = require("../functions/httpRespond");
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
@@ -17,6 +18,55 @@ const smsFunctions = require("../functions/SMS");
 let messageBody = "";
 
 module.exports = app => {
+  app.get("/api/get_earnings/:userId/:stripeAccountId", async (req, res) => {
+    const earnings = {};
+    let curr = new Date(); // get current date
+    let first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+    let last = first + 6; // last day is the first day + 6
+
+    const firstDayOfWeek = Moment(
+      new Date(curr.setDate(first)),
+      "DD-MM-YYYY"
+    ).add(1, "day");
+    const lastDayOfWeek = Moment(
+      new Date(curr.setDate(last)),
+      "DD-MM-YYYY"
+    ).add(1, "day");
+
+    const startOfWeek = Moment(firstDayOfWeek).format();
+    const endOfWeek = Moment(lastDayOfWeek).format();
+
+    const balance = await stripe.balance.retrieve({
+      stripe_account: req.params.stripeAccountId
+    });
+
+    const total_earned_per_week = await Cart.find({
+      orderIsComplete: true,
+      hasCheckedout: true,
+      dateCheckedIn: { $gte: startOfWeek, $lte: endOfWeek }
+    });
+
+    let total = 0;
+
+    for (var i = 0; i < total_earned_per_week.length; i++) {
+      let total_earned = parseFloat(total_earned_per_week[i].partner_takes);
+      total += parseFloat(total_earned);
+    }
+
+    earnings.available_balance = parseFloat(
+      (balance.pending[0].amount + balance.available[0].amount) / 100
+    ).toFixed(2);
+
+    earnings.total_earned_per_week = parseFloat(total).toFixed(2);
+
+    //console.log(Moment(curr).format());
+
+    return httpRespond.authRespond(res, {
+      status: true,
+      earnings
+    });
+  });
+
   app.get(
     "/api/check_cart/:clientId/:partnerId/:serviceId",
     async (req, res) => {
@@ -466,7 +516,7 @@ module.exports = app => {
         cart: cartId
       };
       const r = await new Rate(newReview).save();
-      console.log(r);
+      //  console.log(r);
       return httpRespond.authRespond(res, {
         status: true
       });

@@ -271,6 +271,7 @@ module.exports = app => {
       cart.client_cancellation_fee_received = client_refund.toFixed(2);
       cart.stripe_refund_id = refund.id;
       cart.stripe_transfer_id = transfer.id;
+      cart.orderIsComplete = true;
       cart.save();
       //send sms
       const newDate = moment(new Date(booking_date)).format("MMM DD, YYYY");

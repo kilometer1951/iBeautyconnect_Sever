@@ -4,6 +4,8 @@ const Partner = mongoose.model("partners");
 const Image = mongoose.model("images");
 const Video = mongoose.model("videos");
 const Rate = mongoose.model("rates");
+const Moment = require("moment");
+const Cart = mongoose.model("carts");
 
 const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const ip = require("ip");
@@ -28,7 +30,7 @@ const httpRespond = require("../../functions/httpRespond");
 module.exports = app => {
   app.get("/api/profession", async (req, res) => {
     const profession = await Profession.find();
-    console.log(profession);
+    //  console.log(profession);
     return httpRespond.authRespond(res, {
       status: true,
       data: profession
@@ -132,7 +134,7 @@ module.exports = app => {
         endOfFile: videos.length === 0 ? true : false
       });
     } catch (e) {
-      console.log(req.params.userId);
+      //  console.log(req.params.userId);
       return httpRespond.authRespond(res, {
         status: false
       });
@@ -266,7 +268,7 @@ module.exports = app => {
           belongsTo: req.params.userId
         }).countDocuments();
 
-        console.log(countVideos);
+        //console.log(countVideos);
 
         if (countVideos <= 10) {
           const response = await cloudinary.v2.uploader.upload(req.file.path, {
@@ -298,6 +300,52 @@ module.exports = app => {
       }
     }
   );
+
+  app.get("/api/weekly_activity/:partnerId", async (req, res) => {
+    try {
+      let per_page = 15;
+      let page_no = parseInt(req.query.page);
+      let pagination = {
+        limit: per_page,
+        skip: per_page * (page_no - 1)
+      };
+      let curr = new Date(); // get current date
+      let first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+      let last = first + 6; // last day is the first day + 6
+
+      const firstDayOfWeek = Moment(
+        new Date(curr.setDate(first)),
+        "DD-MM-YYYY"
+      ).add(1, "day");
+      const lastDayOfWeek = Moment(
+        new Date(curr.setDate(last)),
+        "DD-MM-YYYY"
+      ).add(1, "day");
+
+      const startOfWeek = Moment(firstDayOfWeek).format();
+      const endOfWeek = Moment(lastDayOfWeek).format();
+      const cart = await Cart.find({
+        partner: req.params.partnerId,
+        hasCheckedout: true,
+        orderIsComplete: true,
+        dateCheckedIn: { $gte: startOfWeek, $lte: endOfWeek }
+      })
+        .populate("client")
+        .limit(pagination.limit)
+        .skip(pagination.skip);
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        cart,
+        endOfFile: cart.length === 0 ? true : false
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
+  });
 
   app.post("/api/online_status", async (req, res) => {
     //check if account is isActivated before going online

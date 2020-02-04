@@ -34,7 +34,7 @@ module.exports = app => {
     //   individual: { id_number: "624897317" }
     // });
     // console.log(sa);
-    // const ac = await stripe.accounts.list();
+    // const ac = await stripe.accounts.list({});
     // res.send(ac);
     // const account = await stripe.accountCards.list();
     // console.log(account);
@@ -60,23 +60,21 @@ module.exports = app => {
     //   { default_for_currency: false }
     // );
     // console.log(update);
-
-    const balance = await stripe.balance.retrieve({
-      stripe_account: "acct_1Ft3RWEFG0p535eY"
-    });
-    const amount = balance.pending[0].amount;
-    //
-    const pay = await stripe.payouts.create(
-      {
-        amount: amount,
-        currency: "usd",
-        method: "instant"
-      },
-      { stripe_account: "acct_1Ft3RWEFG0p535eY" }
-    );
-    console.log(pay);
-
-    res.send(pay);
+    // const balance = await stripe.balance.retrieve({
+    //   stripe_account: "acct_1Ft3RWEFG0p535eY"
+    // });
+    // const amount = balance.pending[0].amount;
+    // //
+    // const pay = await stripe.payouts.create(
+    //   {
+    //     amount: amount,
+    //     currency: "usd",
+    //     method: "instant"
+    //   },
+    //   { stripe_account: "acct_1Ft3RWEFG0p535eY" }
+    // );
+    //console.log(pay);
+    //res.send(pay);
   });
 
   app.post("/auth/verification", async (req, res) => {
@@ -122,7 +120,7 @@ module.exports = app => {
         messageBody,
         code
       );
-      console.log(messageBody);
+      //  console.log(messageBody);
       return res.send({ status: true, code: code, userFound: true });
     } catch (e) {
       return httpRespond.authRespond(res, {
@@ -228,7 +226,7 @@ module.exports = app => {
 
   app.get("/auth/userIsActive/:userId", async (req, res) => {
     const userFound = await Partner.findOne({ _id: req.params.userId });
-    console.log(userFound);
+    //  console.log(userFound);
     return res.send(userFound);
   });
 
@@ -480,7 +478,7 @@ module.exports = app => {
         user.hasGoneThroughFinalScreen = true;
         user.photoId = photofileId.id;
         user.save();
-        console.log(s);
+        //    console.log(s);
         return httpRespond.authRespond(res, {
           status: true,
           message: "upload complete"

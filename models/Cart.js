@@ -26,8 +26,8 @@ const cartSchema = new Schema({
   hasCanceled: { type: Boolean, default: false },
   noShow: { type: Boolean, default: false },
   hasRescheduled: { type: Boolean, default: false },
-  partner_takes: { type: String, default: "" },
-  stripe_takes: { type: String, default: "" },
+  partner_takes: { type: String, default: "0.00" },
+  stripe_takes: { type: String, default: "0.00" },
   client_cancellation_fee_received: { type: String, default: "" },
   client_cancellation_fee_description: {
     type: String,
