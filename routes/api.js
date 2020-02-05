@@ -500,6 +500,8 @@ module.exports = app => {
 
         //send notificiation to user to be done
 
+        smsFunctions.sendSMS("req", "res", partnerPhone, "You just got paid.");
+
         return httpRespond.authRespond(res, {
           status: true
         });
