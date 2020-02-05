@@ -43,6 +43,7 @@ module.exports = (app, io) => {
 
     socket.on("reSchedule", async function(reScheduleData) {
       io.emit("reSchedule", { reScheduleData });
+      console.log(reScheduleData);
     });
 
     socket.on("disconnect", function() {
