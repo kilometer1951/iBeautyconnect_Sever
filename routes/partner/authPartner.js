@@ -481,7 +481,8 @@ module.exports = app => {
         //    console.log(s);
         return httpRespond.authRespond(res, {
           status: true,
-          message: "upload complete"
+          message: "upload complete",
+          user
         });
       } catch (e) {
         console.log(e);
