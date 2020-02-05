@@ -257,22 +257,6 @@ module.exports = app => {
     });
   });
 
-  app.get("/api/get_all_activities/:userId", async (req, res) => {
-    const allActivities = await Cart.find({
-      partner: req.params.userId,
-      hasCheckedout: true,
-      orderIsComplete: true
-    })
-      .populate("client")
-      .populate("partner")
-      .sort({ booking_date: -1 });
-
-    return httpRespond.authRespond(res, {
-      status: true,
-      allActivities
-    });
-  });
-
   app.get("/api/cart_regular/:clientId/", async (req, res) => {
     try {
       const cart = await Cart.find({

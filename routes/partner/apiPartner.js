@@ -301,6 +301,31 @@ module.exports = app => {
     }
   );
 
+  app.get("/api/get_all_activities/:userId", async (req, res) => {
+    let per_page = 15;
+    let page_no = parseInt(req.query.page);
+    let pagination = {
+      limit: per_page,
+      skip: per_page * (page_no - 1)
+    };
+    const allactivities = await Cart.find({
+      partner: req.params.userId,
+      hasCheckedout: true,
+      orderIsComplete: true
+    })
+      .populate("client")
+      .populate("partner")
+      .limit(pagination.limit)
+      .skip(pagination.skip)
+      .sort({ booking_date: -1 });
+
+    return httpRespond.authRespond(res, {
+      status: true,
+      allactivities,
+      endOfFile: allactivities.length === 0 ? true : false
+    });
+  });
+
   app.get("/api/weekly_activity/:partnerId", async (req, res) => {
     try {
       let per_page = 15;
