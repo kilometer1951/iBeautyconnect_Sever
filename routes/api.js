@@ -18,6 +18,40 @@ const smsFunctions = require("../functions/SMS");
 let messageBody = "";
 
 module.exports = app => {
+  app.post("/api/send_reminder/", async (req, res) => {
+    const {
+      cartId,
+      clientPhone,
+      booking_date,
+      booking_time,
+      partner_name
+    } = req.body.reminderData;
+    const cart = await Cart.findOne({
+      _id: cartId
+    });
+
+    if (cart) {
+      const newDate = Moment(new Date(booking_date)).format("MMM DD, YYYY");
+      let clientMessage =
+        "Just a friendly reminder about you apoitment with " +
+        partner_name +
+        " on " +
+        newDate +
+        " at " +
+        booking_time +
+        ". Thanks for using iBeautyConnect";
+      smsFunctions.sendSMS("req", "res", clientPhone, clientMessage);
+
+      return httpRespond.authRespond(res, {
+        status: true
+      });
+    } else {
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
+  });
+
   app.get("/api/get_earnings/:userId/:stripeAccountId", async (req, res) => {
     const earnings = {};
     let curr = new Date(); // get current date
@@ -200,6 +234,26 @@ module.exports = app => {
     return httpRespond.authRespond(res, {
       status: true,
       appointments
+    });
+  });
+
+  app.get("/api/get_daily_appoitments/:userId", async (req, res) => {
+    let newDate = Moment(new Date()).format("YYYY-MM-DD");
+    let dateTime = new Date(newDate + "" + "T06:00:00.000Z");
+
+    const dailyAppoitments = await Cart.find({
+      partner: req.params.userId,
+      hasCheckedout: true,
+      orderIsComplete: false,
+      booking_date: dateTime
+    })
+      .populate("client")
+      .populate("partner")
+      .sort({ booking_date: -1 });
+
+    return httpRespond.authRespond(res, {
+      status: true,
+      dailyAppoitments
     });
   });
 
@@ -405,47 +459,54 @@ module.exports = app => {
         clientId
       } = req.body.checkInData;
 
-      const stripeFees = parseFloat(total) * 0.029 + 0.3;
-      const partner_takes = Math.round(parseFloat(total) * 0.8);
-      const ibeauty_connect_takes =
-        parseFloat(total) - partner_takes - stripeFees;
-
-      const amount_to_transfer = Math.round(parseFloat(partner_takes) * 100);
-
-      const transfer = await stripe.transfers.create({
-        amount: amount_to_transfer,
-        currency: "usd",
-        source_transaction: stripe_charge_id,
-        destination: partner_stripe_id
-      });
-
       const cart = await Cart.findOne({
         _id: cartId
       });
-      cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
-      cart.stripe_takes = stripeFees.toFixed(2);
-      cart.partner_takes = partner_takes.toFixed(2);
-      cart.stripe_transfer_id = transfer.id;
-      cart.dateCheckedIn = today;
-      cart.orderIsComplete = true;
-      cart.save();
 
-      //update messages by removing from list
-      const message = await Message.findOne({
-        client: clientId,
-        partner: partnerId,
-        deleted: false
-      });
-      if (message) {
-        message.deleted = true;
-        message.save();
+      if (cart) {
+        const stripeFees = parseFloat(total) * 0.029 + 0.3;
+        const partner_takes = Math.round(parseFloat(total) * 0.8);
+        const ibeauty_connect_takes =
+          parseFloat(total) - partner_takes - stripeFees;
+
+        const amount_to_transfer = Math.round(parseFloat(partner_takes) * 100);
+
+        const transfer = await stripe.transfers.create({
+          amount: amount_to_transfer,
+          currency: "usd",
+          source_transaction: stripe_charge_id,
+          destination: partner_stripe_id
+        });
+
+        cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
+        cart.stripe_takes = stripeFees.toFixed(2);
+        cart.partner_takes = partner_takes.toFixed(2);
+        cart.stripe_transfer_id = transfer.id;
+        cart.dateCheckedIn = today;
+        cart.orderIsComplete = true;
+        cart.save();
+
+        //update messages by removing from list
+        const message = await Message.findOne({
+          client: clientId,
+          partner: partnerId,
+          deleted: false
+        });
+        if (message) {
+          message.deleted = true;
+          message.save();
+        }
+
+        //send notificiation to user to be done
+
+        return httpRespond.authRespond(res, {
+          status: true
+        });
+      } else {
+        return httpRespond.authRespond(res, {
+          status: false
+        });
       }
-
-      //send notificiation to user to be done
-
-      return httpRespond.authRespond(res, {
-        status: true
-      });
     } catch (e) {
       return httpRespond.authRespond(res, {
         status: false,

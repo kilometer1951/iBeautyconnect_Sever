@@ -36,6 +36,11 @@ module.exports = (app, io) => {
       console.log(cancelAppoitmentData);
     });
 
+    socket.on("noShow", async function(noShowAppoitmentData) {
+      io.emit("noShow", noShowAppoitmentData);
+      console.log(noShowAppoitmentData);
+    });
+
     socket.on("reSchedule", async function(reScheduleData) {
       io.emit("reSchedule", { reScheduleData });
     });
