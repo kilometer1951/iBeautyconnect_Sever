@@ -460,7 +460,8 @@ module.exports = app => {
       } = req.body.checkInData;
 
       const cart = await Cart.findOne({
-        _id: cartId
+        _id: cartId,
+        orderIsComplete: false
       });
 
       if (cart) {

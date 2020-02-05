@@ -236,7 +236,8 @@ module.exports = app => {
       } = req.body.cancelAppoitmentData;
 
       const cart = await Cart.findOne({
-        _id: cartId
+        _id: cartId,
+        orderIsComplete: false
       });
 
       if (cart) {
@@ -494,7 +495,8 @@ module.exports = app => {
       } = req.body.reScheduleData;
 
       const cart = await Cart.findOne({
-        _id: cartId
+        _id: cartId,
+        orderIsComplete: false
       });
 
       if (cart) {
@@ -602,7 +604,8 @@ module.exports = app => {
       } = req.body.noShowAppoitmentData;
 
       const cart = await Cart.findOne({
-        _id: cartId
+        _id: cartId,
+        orderIsComplete: false
       });
 
       if (cart) {
