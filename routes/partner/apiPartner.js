@@ -310,7 +310,6 @@ module.exports = app => {
     };
     const allactivities = await Cart.find({
       partner: req.params.userId,
-      hasCheckedout: true,
       orderIsComplete: true
     })
       .populate("client")
