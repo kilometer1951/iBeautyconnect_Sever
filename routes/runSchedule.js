@@ -42,7 +42,12 @@ module.exports = (app, agenda) => {
         if (systemTime == newTime_1) {
           let partnerMessage = `Appointment reminder. This is a quick reminder of your appointment with ${client_name} on ${newDate} at ${timeNow}. Do not forget to tell your client to check in through the app thanks iBeautyConnect`;
           let clientMessage = `Appointment reminder. This is a quick reminder of your appointment with ${partner_name} on ${newDate} at ${timeNow}. Do not forget to check in through the app thanks iBeautyConnect`;
-          smsFunctions.sendSMS(req, res, partner_phone_number, partnerMessage);
+          smsFunctions.sendSMS(
+            "req",
+            "res",
+            partner_phone_number,
+            partnerMessage
+          );
           smsFunctions.sendSMS(
             "req",
             "res",
@@ -55,12 +60,17 @@ module.exports = (app, agenda) => {
           let partnerMessage_2 = `Appointment reminder. It's time for your appointment with ${client_name}. Do not forget to tell your client to check in through the app thanks iBeautyConnect`;
           let clientMessage_2 = `Appointment reminder. It's time for your appointment with ${partner_name}. Open the iBeautyConnect app to checkin iBeautyConnectClient://appointment_checkin`;
           smsFunctions.sendSMS(
-            req,
-            res,
+            "req",
+            "res",
             partner_phone_number,
             partnerMessage_2
           );
-          smsFunctions.sendSMS(req, res, client_phone_number, clientMessage_2);
+          smsFunctions.sendSMS(
+            "req",
+            "res",
+            client_phone_number,
+            clientMessage_2
+          );
         }
       }
     }

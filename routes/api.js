@@ -33,7 +33,7 @@ module.exports = app => {
     if (cart) {
       const newDate = Moment(new Date(booking_date)).format("MMM DD, YYYY");
       let clientMessage =
-        "Just a friendly reminder about you apoitment with " +
+        "Just a friendly reminder about your apoitment with " +
         partner_name +
         " on " +
         newDate +
