@@ -33,7 +33,7 @@ module.exports = app => {
     if (cart) {
       const newDate = Moment(new Date(booking_date)).format("MMM DD, YYYY");
       let clientMessage =
-        "Just a friendly reminder about your apoitment with " +
+        "Just a friendly reminder about your appoitment with " +
         partner_name +
         " on " +
         newDate +
@@ -682,11 +682,24 @@ module.exports = app => {
         //send sms
         messageBody =
           req.body.messageData.message +
-          ". Open the iBeautyConnect app to respond to your clients request. iBeautyConnectPartner://messages thanks.";
+          " Open the iBeautyConnect app to respond to your clients request thanks. iBeautyConnectPartner://messages.";
         smsFunctions.sendSMS(
           "req",
           "res",
           req.body.messageData.partnerPhone,
+          messageBody
+        );
+      }
+
+      if (req.body.messageData.type == "reschedule partner") {
+        //send sms
+        messageBody =
+          req.body.messageData.message +
+          " Open the iBeautyConnect app to respond thanks. iBeautyConnectClient://messages.";
+        smsFunctions.sendSMS(
+          "req",
+          "res",
+          req.body.messageData.clientPhone,
           messageBody
         );
       }
@@ -733,6 +746,7 @@ module.exports = app => {
         status: true
       });
     } catch (e) {
+      console.log(e);
       return httpRespond.authRespond(res, {
         status: false,
         message: e

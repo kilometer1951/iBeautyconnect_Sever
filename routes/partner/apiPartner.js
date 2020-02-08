@@ -379,4 +379,51 @@ module.exports = app => {
     user.save();
     return res.send({ success: true });
   });
+
+  app.get("/api/get_all_appoitments/:partnerId", async (req, res) => {
+    let per_page = 10;
+    let page_no = parseInt(req.query.page);
+    let pagination = {
+      limit: per_page,
+      skip: per_page * (page_no - 1)
+    };
+    const allAppoitments = await Cart.find({
+      partner: req.params.partnerId,
+      hasCheckedout: true,
+      orderIsComplete: false,
+      hasCanceled: false
+    })
+      .populate("client")
+      .populate("partner")
+      .sort({ booking_date: -1 })
+      .limit(pagination.limit)
+      .skip(pagination.skip);
+
+    return httpRespond.authRespond(res, {
+      status: true,
+      allAppoitments,
+      endOfFile: allAppoitments.length === 0 ? true : false
+    });
+  });
+
+  app.get(
+    "/api/query_partner_agenda_by_date/:partnerId/:dateTime",
+    async (req, res) => {
+      const allAppoitments = await Cart.find({
+        partner: req.params.partnerId,
+        hasCheckedout: true,
+        orderIsComplete: false,
+        hasCanceled: false,
+        booking_date: new Date(req.params.dateTime)
+      })
+        .populate("client")
+        .populate("partner")
+        .sort({ booking_date: -1 });
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        allAppoitments
+      });
+    }
+  );
 };

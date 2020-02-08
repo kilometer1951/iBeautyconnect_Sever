@@ -33,7 +33,7 @@ module.exports = (app, agenda) => {
 
         const timeNow = Moment(dateTime).format("h:mm a");
 
-        const client_name = carts[i].name;
+        const client_name = carts[i].client.name;
         const client_phone_number = carts[i].client.phone;
 
         const partner_name = carts[i].partner.fName;

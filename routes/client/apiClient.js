@@ -477,21 +477,58 @@ module.exports = app => {
         cart.booking_time = new_booking_time;
         cart.save();
 
-        // //delete cron job and create new one
-        //
-        // let input = new_booking_time,
-        //   matches = input.toLowerCase().match(/(\d{1,2}):(\d{2}) ([ap]m)/),
-        //   outputTime =
-        //     parseInt(matches[1]) +
-        //     (matches[3] == "pm" ? 12 : 0) +
-        //     ":" +
-        //     matches[2] +
-        //     ":00";
-        // let dateTime = new Date(new_booking_date + " " + outputTime);
-        // let MS_PER_MINUTE = 60000;
-        // let thirtyMinuteBefore = new Date(dateTime - 30 * MS_PER_MINUTE);
-        // let tenMinuteBefore = new Date(dateTime - 10 * MS_PER_MINUTE);
-        //
+        return httpRespond.authRespond(res, {
+          status: true
+        });
+      } else {
+        return httpRespond.authRespond(res, {
+          status: false
+        });
+      }
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
+  });
+
+  app.post("/api/reSchedule_partner", async (req, res) => {
+    try {
+      const {
+        cartId,
+        partnerId,
+        booking_date,
+        booking_time,
+        client_name,
+        clientPhone,
+        clientId
+      } = req.body.reScheduleData;
+
+      const cart = await Cart.findOne({
+        _id: cartId,
+        orderIsComplete: false
+      });
+
+      if (cart) {
+        const newDate = moment(new Date(req.body.bookingDate)).format(
+          "MMM DD, YYYY"
+        );
+        const new_booking_date = req.body.bookingDate;
+        const new_booking_time = req.body.bookingTime;
+
+        // //send sms to parter
+        messageBody = `Hi, one of your appoitment has been updated from ${moment(
+          new Date(booking_date)
+        ).format("MMM DD, YYYY")} at ${booking_time} To ${moment(
+          new Date(new_booking_date)
+        ).format("MMM DD, YYYY")} at ${new_booking_time}.`;
+
+        smsFunctions.sendSMS("req", "res", clientPhone, messageBody);
+
+        //update cart with new date and time
+        cart.booking_date = new_booking_date;
+        cart.booking_time = new_booking_time;
+        cart.save();
 
         return httpRespond.authRespond(res, {
           status: true
