@@ -12,12 +12,40 @@ const Support = mongoose.model("supports");
 const Moment = require("moment");
 
 const httpRespond = require("../functions/httpRespond");
-const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
 
 const smsFunctions = require("../functions/SMS");
 let messageBody = "";
 
+let apn = require("apn");
+
+let f = require("../pushNotif.pem");
+
 module.exports = app => {
+  app.post("/api/testN/", async (req, res) => {
+    let provider = new apn.Provider({
+      token: {
+        key: f,
+        keyId: "key-id",
+        teamId: "TRBNA383H2"
+      },
+      production: false
+    });
+
+    let deviceTokens = [
+      "86eaacdfa8889588522cdff826b4afcad40ae68242e2e6973fcea52008ffc1ee"
+    ];
+
+    let notification = new apn.Notification();
+    notification.alert = "Hello, world!";
+    notification.badge = 1;
+    notification.topic = "io.github.node-apn.test-app";
+
+    apn.Provider.send(notification, deviceTokens).then(response => {
+      console.log(deviceTokens);
+    });
+  });
+
   app.post("/api/send_reminder/", async (req, res) => {
     const {
       cartId,
