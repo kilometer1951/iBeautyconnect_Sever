@@ -292,7 +292,7 @@ module.exports = app => {
         });
         //update cart
 
-        let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
+        let newCheckInDate = moment(new Date()).format("YYYY-MM-DD");
         let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
 
         cart.hasCanceled = true;
@@ -672,7 +672,7 @@ module.exports = app => {
 
         //update cart
 
-        let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
+        let newCheckInDate = moment(new Date()).format("YYYY-MM-DD");
         let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
 
         cart.noShow = true;
