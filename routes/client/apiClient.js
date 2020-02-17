@@ -292,12 +292,17 @@ module.exports = app => {
         });
         //update cart
 
+        let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
+        let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
+
         cart.hasCanceled = true;
         cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
         cart.partner_takes = partner_takes.toFixed(2);
         cart.client_cancellation_fee_received = client_refund.toFixed(2);
         cart.stripe_refund_id = refund.id;
         cart.stripe_transfer_id = transfer.id;
+        cart.dateCheckedIn = dateCheckedIn;
+        cart.dateTimeCheckedIn = new Date();
         cart.orderIsComplete = true;
         cart.save();
         //send sms
@@ -667,12 +672,17 @@ module.exports = app => {
 
         //update cart
 
+        let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
+        let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
+
         cart.noShow = true;
         cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
         cart.partner_takes = partner_takes.toFixed(2);
         cart.client_cancellation_fee_received = client_refund.toFixed(2);
         cart.stripe_refund_id = refund.id;
         cart.stripe_transfer_id = transfer.id;
+        cart.dateCheckedIn = dateCheckedIn;
+        cart.dateTimeCheckedIn = new Date();
         cart.orderIsComplete = true;
         cart.save();
         //send sms

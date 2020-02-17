@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Client = mongoose.model("clients");
-const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 
 const password = require("../../functions/password");
 const httpRespond = require("../../functions/httpRespond");

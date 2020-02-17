@@ -96,6 +96,13 @@ module.exports = app => {
     const startOfWeek = Moment(firstDayOfWeek).format();
     const endOfWeek = Moment(lastDayOfWeek).format();
 
+    //convert date to regular time zone
+    let newStartDate = Moment(startOfWeek).format("YYYY-MM-DD");
+    let newStartOfWeekDateTime = new Date(newStartDate + "" + "T06:00:00.000Z");
+
+    let newEndDate = Moment(endOfWeek).format("YYYY-MM-DD");
+    let newEndOfWeekDateTime = new Date(newEndDate + "" + "T06:00:00.000Z");
+
     const balance = await stripe.balance.retrieve({
       stripe_account: req.params.stripeAccountId
     });
@@ -103,7 +110,10 @@ module.exports = app => {
     const total_earned_per_week = await Cart.find({
       orderIsComplete: true,
       hasCheckedout: true,
-      dateCheckedIn: { $gte: startOfWeek, $lte: endOfWeek }
+      dateCheckedIn: {
+        $gte: newStartOfWeekDateTime,
+        $lte: newEndOfWeekDateTime
+      }
     });
 
     let total = 0;
@@ -505,11 +515,15 @@ module.exports = app => {
           destination: partner_stripe_id
         });
 
+        let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
+        let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
+
         cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
         cart.stripe_takes = stripeFees.toFixed(2);
         cart.partner_takes = partner_takes.toFixed(2);
         cart.stripe_transfer_id = transfer.id;
-        cart.dateCheckedIn = today;
+        cart.dateCheckedIn = dateCheckedIn;
+        cart.dateTimeCheckedIn = new Date();
         cart.orderIsComplete = true;
         cart.save();
 

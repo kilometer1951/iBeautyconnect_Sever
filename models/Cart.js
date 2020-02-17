@@ -4,6 +4,7 @@ const { Schema } = mongoose;
 const cartSchema = new Schema({
   dateAdded: { type: Date, default: Date.now },
   dateCheckedIn: { type: Date, default: Date.now },
+  dateTimeCheckedIn: { type: Date, default: Date.now },
   client: { type: Schema.Types.ObjectId, ref: "clients" },
   partner: { type: Schema.Types.ObjectId, ref: "partners" },
   items: [{ services: {} }],
