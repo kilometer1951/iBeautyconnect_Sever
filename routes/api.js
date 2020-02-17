@@ -559,6 +559,22 @@ module.exports = app => {
       messages
     });
   });
+
+  app.get("/api/messages_partner/:partnerId", async (req, res) => {
+    const messages = await Message.find({
+      partner: req.params.partnerId,
+      deleted: false
+    })
+      .populate("client")
+      .populate("partner")
+      .sort({ dateModified: -1 });
+
+    return httpRespond.authRespond(res, {
+      status: true,
+      messages
+    });
+  });
+
   app.get("/api/conversations/:messageId", async (req, res) => {
     const messages = await Message.findOne({
       _id: req.params.messageId,
