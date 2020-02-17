@@ -3,7 +3,7 @@ const Client = mongoose.model("clients");
 const Partner = mongoose.model("partners");
 const Cart = mongoose.model("carts");
 const Message = mongoose.model("messages");
-const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const moment = require("moment");
 const schedule = require("node-schedule");
 
@@ -223,6 +223,27 @@ module.exports = app => {
     }
   });
 
+  app.post("/api/update_cutomer_stripe_email/", async (req, res) => {
+    try {
+      const respond = await stripe.customers.update(req.body.stripeId, {
+        email: req.body.update_email,
+        description: "Customer for: " + req.body.update_email
+      });
+
+      console.log(respond);
+
+      return httpRespond.authRespond(res, {
+        status: true
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+
   app.post("/api/cancel_appoitment/", async (req, res) => {
     try {
       const {
@@ -319,6 +340,72 @@ module.exports = app => {
     }
   });
 
+  app.post("/api/charge_card_one_time_payment/", async (req, res) => {
+    try {
+      const {
+        tokenId,
+        cartId,
+        partner_phone_number,
+        client_phone_number,
+        subTotal,
+        total,
+        comfort_fee,
+        bookingDate,
+        bookingTime,
+        stripeId,
+        client_name,
+        partner_name,
+        comfortFeeAddress
+      } = req.body.chargeCardData;
+
+      const newDate = moment(new Date(bookingDate)).format("MMM DD, YYYY");
+
+      //charge card
+      let amount = Math.round(parseFloat(total) * 100);
+      const charge = await stripe.charges.create({
+        amount: amount,
+        currency: "usd",
+        source: tokenId,
+        description:
+          "Payment for Health and Beauty services to: " + partner_name
+      });
+
+      //update cart
+      const cart = await Cart.findOne({
+        _id: cartId
+      });
+      cart.hasCheckedout = true;
+      cart.subTotal = subTotal;
+      cart.total = total;
+      cart.booking_date = bookingDate;
+      cart.booking_time = bookingTime;
+      cart.stripe_charge_id = charge.id;
+      cart.comfort_fee = comfort_fee;
+      cart.comfortFeeAddress = comfortFeeAddress;
+      cart.save();
+
+      if (comfortFeeAddress === "") {
+        // send message to partner
+        messageBody = `Appointment confirmation for ${client_name} on ${newDate} at ${bookingTime}. This message is to confirm that ${client_name} has just booked an appointment with you. iBeautyConnect`;
+      } else {
+        messageBody = `Appointment confirmation for ${client_name} on ${newDate} at ${bookingTime}. This message is to confirm that ${client_name} has just booked an appointment with you. This is a comfort request that means you have to go to your client. Their address is ${comfortFeeAddress} thanks. iBeautyConnect`;
+      }
+
+      smsFunctions.sendSMS(req, res, partner_phone_number, messageBody);
+
+      //return back to user
+      return httpRespond.authRespond(res, {
+        status: true
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e.message
+      });
+    }
+  });
+
   app.post("/api/charge_card/", async (req, res) => {
     try {
       const {
@@ -349,20 +436,6 @@ module.exports = app => {
         transfer_group: cartId
       });
 
-      // //dateTime calculation
-      // let input = bookingTime,
-      //   matches = input.toLowerCase().match(/(\d{1,2}):(\d{2}) ([ap]m)/),
-      //   outputTime =
-      //     parseInt(matches[1]) +
-      //     (matches[3] == "pm" ? 12 : 0) +
-      //     ":" +
-      //     matches[2] +
-      //     ":00";
-      // let dateTime = new Date(bookingDate + " " + outputTime);
-      // let MS_PER_MINUTE = 60000;
-      // let thirtyMinuteBefore = new Date(dateTime - 30 * MS_PER_MINUTE);
-      // let tenMinuteBefore = new Date(dateTime - 10 * MS_PER_MINUTE);
-      //end date time calculation
       //update cart
       const cart = await Cart.findOne({
         _id: cartId

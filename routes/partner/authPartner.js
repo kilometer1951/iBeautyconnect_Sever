@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Partner = mongoose.model("partners");
-const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const ip = require("ip");
 
 const password = require("../../functions/password");
@@ -452,7 +452,7 @@ module.exports = app => {
     upload.single("photo_front"),
     async (req, res) => {
       try {
-        const response = await cloudinary.uploader.upload(req.file.path);
+        //const response = await cloudinary.uploader.upload(req.file.path);
         const user = await Partner.findOne({ _id: req.params.userId });
         //update stripe account front of id card
         //upload to stripe
@@ -475,10 +475,57 @@ module.exports = app => {
             }
           }
         });
-        user.hasGoneThroughFinalScreen = true;
+        //user.hasGoneThroughFinalScreen = true;
         user.photoId = photofileId.id;
         user.save();
-        //    console.log(s);
+        console.log(photofileId);
+        return httpRespond.authRespond(res, {
+          status: true,
+          message: "upload complete",
+          user
+        });
+      } catch (e) {
+        console.log(e);
+        return httpRespond.authRespond(res, {
+          status: false,
+          message: e
+        });
+      }
+    }
+  );
+
+  app.post(
+    "/auth/upload_photo_id_back/:userId",
+    upload.single("photo_back"),
+    async (req, res) => {
+      try {
+        //  const response = await cloudinary.uploader.upload(req.file.path);
+        const user = await Partner.findOne({ _id: req.params.userId });
+        //update stripe account front of id card
+        //upload to stripe
+        const fp = fs.readFileSync(req.file.path);
+        const photofileId = await stripe.files.create({
+          file: {
+            data: fp,
+            name: req.file.filename,
+            type: req.file.mimetype
+          },
+          purpose: "identity_document"
+        });
+        //update stripe account
+        const s = await stripe.accounts.update(user.stripeAccountId, {
+          individual: {
+            verification: {
+              document: {
+                back: photofileId.id
+              }
+            }
+          }
+        });
+        user.hasGoneThroughFinalScreen = true;
+        user.photoId_back = photofileId.id;
+        user.save();
+        console.log(photofileId);
         return httpRespond.authRespond(res, {
           status: true,
           message: "upload complete",

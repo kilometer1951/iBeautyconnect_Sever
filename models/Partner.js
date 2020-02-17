@@ -55,6 +55,7 @@ let partnerSchema = new Schema({
   dob: { type: Date, default: Date.now },
   service_gender: { type: String, default: "" },
   photoId: { type: String, default: "" },
+  photoId_back: { type: String, default: "" },
   points: { type: Number, default: 0 },
   image1: { type: String, default: "" },
   cloudinaryId_image1: { type: String, default: "" },
