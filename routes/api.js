@@ -721,6 +721,10 @@ module.exports = app => {
         deleted: false
       });
 
+      const partner = await Partner.findOne({
+        _id: req.body.messageData.partnerId
+      });
+
       if (req.body.messageData.type == "reschedule") {
         //send sms
         messageBody =
@@ -745,6 +749,14 @@ module.exports = app => {
           req.body.messageData.clientPhone,
           messageBody
         );
+      }
+
+      if (req.body.messageData.type == "from_orders") {
+        //send sms
+        messageBody =
+          req.body.messageData.message +
+          "Open the iBeautyConnect app to respond. Thanks iBeautyConnectPartner://messages.";
+        smsFunctions.sendSMS("req", "res", partner.phone, messageBody);
       }
 
       if (message) {
