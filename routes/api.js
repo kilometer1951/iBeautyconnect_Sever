@@ -515,7 +515,7 @@ module.exports = app => {
           destination: partner_stripe_id
         });
 
-        let newCheckInDate = moment(new Date()).format("YYYY-MM-DD");
+        let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
         let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
 
         cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
