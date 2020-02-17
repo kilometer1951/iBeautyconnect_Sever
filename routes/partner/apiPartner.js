@@ -7,7 +7,7 @@ const Rate = mongoose.model("rates");
 const Moment = require("moment");
 const Cart = mongoose.model("carts");
 
-const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
 const ip = require("ip");
 
 const multer = require("multer");
@@ -348,11 +348,24 @@ module.exports = app => {
 
       const startOfWeek = Moment(firstDayOfWeek).format();
       const endOfWeek = Moment(lastDayOfWeek).format();
+
+      //convert date to regular time zone
+      let newStartDate = Moment(startOfWeek).format("YYYY-MM-DD");
+      let newStartOfWeekDateTime = new Date(
+        newStartDate + "" + "T06:00:00.000Z"
+      );
+
+      let newEndDate = Moment(endOfWeek).format("YYYY-MM-DD");
+      let newEndOfWeekDateTime = new Date(newEndDate + "" + "T06:00:00.000Z");
+
       const cart = await Cart.find({
         partner: req.params.partnerId,
         hasCheckedout: true,
         orderIsComplete: true,
-        dateCheckedIn: { $gte: startOfWeek, $lte: endOfWeek }
+        dateCheckedIn: {
+          $gte: newStartOfWeekDateTime,
+          $lte: newEndOfWeekDateTime
+        }
       })
         .populate("client")
         .limit(pagination.limit)
@@ -424,6 +437,45 @@ module.exports = app => {
         status: true,
         allAppoitments
       });
+    }
+  );
+
+  app.post(
+    "/api/edit_partner_photo/:partnerId",
+    upload.single("photo"),
+    async (req, res) => {
+      try {
+        const partner = await Partner.findOne({ _id: req.params.partnerId });
+
+        if (partner.profilePhotoCloudinaryId === "") {
+          //new upload
+          const response = await cloudinary.uploader.upload(req.file.path);
+          partner.profilePhoto = response.url;
+          partner.profilePhotoCloudinaryId = response.public_id;
+          partner.save();
+        } else {
+          //delete old photo and upload new photo
+          await cloudinary.v2.uploader.destroy(
+            partner.profilePhotoCloudinaryId
+          );
+          // //upload new photo
+          const response = await cloudinary.uploader.upload(req.file.path);
+          partner.profilePhoto = response.url;
+          partner.profilePhotoCloudinaryId = response.public_id;
+          partner.save();
+        }
+
+        return httpRespond.authRespond(res, {
+          status: true,
+          message: "upload complete"
+        });
+      } catch (e) {
+        console.log(e);
+        return httpRespond.authRespond(res, {
+          status: false,
+          message: e
+        });
+      }
     }
   );
 };

@@ -13,6 +13,7 @@ let partnerSchema = new Schema({
     type: String,
     default: "https://oarnation.com/content/no-picture.jpg"
   },
+  profilePhotoCloudinaryId: { type: String, default: "" },
   hasGoneThroughFinalScreen: { type: Boolean, default: false },
   introScreen: { type: Boolean, default: false },
   profession: { type: String, default: "" },

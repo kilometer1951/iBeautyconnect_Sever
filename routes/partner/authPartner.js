@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Partner = mongoose.model("partners");
-const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
 const ip = require("ip");
 
 const password = require("../../functions/password");
@@ -265,10 +265,26 @@ module.exports = app => {
     upload.single("profilePhoto"),
     async (req, res) => {
       try {
-        const response = await cloudinary.uploader.upload(req.file.path);
-        const user = await Partner.findOne({ _id: req.params.userId });
-        user.profilePhoto = response.url;
-        user.save();
+        const partner = await Partner.findOne({ _id: req.params.userId });
+
+        if (partner.profilePhotoCloudinaryId === "") {
+          //new upload
+          const response = await cloudinary.uploader.upload(req.file.path);
+          partner.profilePhoto = response.url;
+          partner.profilePhotoCloudinaryId = response.public_id;
+          partner.save();
+        } else {
+          //delete old photo and upload new photo
+          await cloudinary.v2.uploader.destroy(
+            partner.profilePhotoCloudinaryId
+          );
+          // //upload new photo
+          const response = await cloudinary.uploader.upload(req.file.path);
+          partner.profilePhoto = response.url;
+          partner.profilePhotoCloudinaryId = response.public_id;
+          partner.save();
+        }
+
         return httpRespond.authRespond(res, {
           status: true,
           message: "upload complete"
@@ -371,6 +387,41 @@ module.exports = app => {
     let stripeAccount;
     //add bank to account and update DOB
     try {
+      stripeAccount = await stripe.accounts.createExternalAccount(
+        user.stripeAccountId,
+        {
+          external_account: req.body.bankAccountToken
+        }
+      );
+      user.bankLastFour = stripeAccount.last4;
+      user.bankId = stripeAccount.id;
+      //  user.hasGoneThroughFinalScreen = true;
+      user.save();
+      return httpRespond.authRespond(res, {
+        status: true
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e.raw.message
+      });
+    }
+  });
+
+  app.post("/auth/add_bank_account_info_settings", async (req, res) => {
+    const user = await Partner.findOne({ _id: req.body.userId });
+    let stripeAccount;
+    //add bank to account and update DOB
+    try {
+      //delete banking info from stripe
+      await stripe.accounts.deleteExternalAccount(
+        user.stripeAccountId,
+        user.bankId
+      );
+
+      //update new info
+
       stripeAccount = await stripe.accounts.createExternalAccount(
         user.stripeAccountId,
         {

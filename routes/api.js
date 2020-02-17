@@ -12,7 +12,7 @@ const Support = mongoose.model("supports");
 const Moment = require("moment");
 
 const httpRespond = require("../functions/httpRespond");
-const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
 
 const smsFunctions = require("../functions/SMS");
 let messageBody = "";
@@ -860,6 +860,26 @@ module.exports = app => {
     }
   });
 
+  app.get("/api/get_supportMessages_partner/:partnerId", async (req, res) => {
+    try {
+      const supportMessage = await Support.find({
+        partner: req.params.partnerId,
+        ticketStatus: "open"
+      });
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        supportMessage
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+
   app.get("/api/get_supportConvo/:supportMessageId", async (req, res) => {
     try {
       const supportConvo = await Support.findOne({
@@ -911,6 +931,58 @@ module.exports = app => {
       } else {
         newMessage = {
           client: clientId,
+          category: category,
+          message_data: {
+            message: message,
+            to: to,
+            from: from_
+          }
+        };
+        new Support(newMessage).save();
+        return httpRespond.authRespond(res, {
+          status: true
+        });
+      }
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+
+  app.post("/api/new_support_message_partner/", async (req, res) => {
+    try {
+      const { partnerId, message, to, from_, category } = req.body.messageData;
+      //save message
+      const supportMessage = await Support.findOne({
+        partner: partnerId,
+        category: category,
+        ticketStatus: "open"
+      });
+
+      if (supportMessage) {
+        //update and do things
+        //update message
+        const update_message = {
+          message: message,
+          to: to,
+          from: from_
+        };
+        await Support.updateOne(
+          { _id: supportMessage._id },
+          {
+            $push: {
+              message_data: update_message
+            }
+          }
+        );
+        return httpRespond.authRespond(res, {
+          status: true
+        });
+      } else {
+        newMessage = {
+          partner: partnerId,
           category: category,
           message_data: {
             message: message,

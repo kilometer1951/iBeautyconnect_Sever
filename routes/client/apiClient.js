@@ -3,7 +3,7 @@ const Client = mongoose.model("clients");
 const Partner = mongoose.model("partners");
 const Cart = mongoose.model("carts");
 const Message = mongoose.model("messages");
-const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
 const moment = require("moment");
 const schedule = require("node-schedule");
 
@@ -33,6 +33,22 @@ module.exports = app => {
   app.get("/api/get_points/:clientId", async (req, res) => {
     try {
       const response = await Client.findOne({ _id: req.params.clientId });
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        points: response.points
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false,
+        message: e
+      });
+    }
+  });
+
+  app.get("/api/get_points_partner/:partnerId", async (req, res) => {
+    try {
+      const response = await Partner.findOne({ _id: req.params.partnerId });
 
       return httpRespond.authRespond(res, {
         status: true,
