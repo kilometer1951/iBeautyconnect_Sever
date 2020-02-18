@@ -503,7 +503,9 @@ module.exports = app => {
       if (cart) {
         const stripeFees = (parseFloat(total) * 0.029 + 0.3).toFixed(2);
         const new_total = (total - parseFloat(stripeFees)).toFixed(2);
-        const ibeauty_connect_takes = (parseFloat(new_total) * 0.2).toFixed(2);
+        const ibeauty_connect_takes = (parseFloat(new_total) * 0.168).toFixed(
+          2
+        );
         const partner_takes = (
           parseFloat(new_total) - parseFloat(ibeauty_connect_takes)
         ).toFixed(2);

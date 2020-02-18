@@ -280,14 +280,19 @@ module.exports = app => {
       });
 
       if (cart) {
-        const stripeFees = parseFloat(total) * 0.029 + 0.3;
+        const stripeFees = (parseFloat(total) * 0.029 + 0.3).toFixed(2);
+        const new_total = (total - parseFloat(stripeFees)).toFixed(2);
+        const ibeauty_connect_takes = (parseFloat(new_total) * 0.168).toFixed(
+          2
+        );
+        const partner_takes = (parseFloat(new_total) * 0.5).toFixed(2);
 
-        const partner_takes = parseFloat(total) * 0.5;
-
-        const client_refund = parseFloat(total) * 0.3;
-
-        const ibeauty_connect_takes =
-          parseFloat(total) - (client_refund + partner_takes) - stripeFees;
+        const client_refund = (
+          total -
+          parseFloat(stripeFees) -
+          parseFloat(ibeauty_connect_takes) -
+          parseFloat(partner_takes)
+        ).toFixed(2);
 
         const amount_to_refund = Math.round(parseFloat(client_refund) * 100);
         const amount_to_transfer = Math.round(parseFloat(partner_takes) * 100);
@@ -312,9 +317,9 @@ module.exports = app => {
         let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
 
         cart.hasCanceled = true;
-        cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
-        cart.partner_takes = partner_takes.toFixed(2);
-        cart.client_cancellation_fee_received = client_refund.toFixed(2);
+        cart.ibeauty_connect_takes = ibeauty_connect_takes;
+        cart.partner_takes = partner_takes;
+        cart.client_cancellation_fee_received = client_refund;
         cart.stripe_refund_id = refund.id;
         cart.stripe_transfer_id = transfer.id;
         cart.dateCheckedIn = dateCheckedIn;
@@ -329,7 +334,7 @@ module.exports = app => {
           " at " +
           booking_time +
           " has cancelled their appoitment. The good news is, you got paid a cancellation fee of $" +
-          partner_takes.toFixed(2) +
+          partner_takes +
           ". Thanks for using iBeautyConnect";
         smsFunctions.sendSMS("req", "res", partnerPhone, message);
 
@@ -662,11 +667,19 @@ module.exports = app => {
       });
 
       if (cart) {
-        const stripeFees = parseFloat(total) * 0.029 + 0.3;
-        const partner_takes = parseFloat(total) * 0.5;
-        const client_refund = parseFloat(total) * 0.3;
-        const ibeauty_connect_takes =
-          parseFloat(total) - (client_refund + partner_takes) - stripeFees;
+        const stripeFees = (parseFloat(total) * 0.029 + 0.3).toFixed(2);
+        const new_total = (total - parseFloat(stripeFees)).toFixed(2);
+        const ibeauty_connect_takes = (parseFloat(new_total) * 0.168).toFixed(
+          2
+        );
+        const partner_takes = (parseFloat(new_total) * 0.5).toFixed(2);
+
+        const client_refund = (
+          total -
+          parseFloat(stripeFees) -
+          parseFloat(ibeauty_connect_takes) -
+          parseFloat(partner_takes)
+        ).toFixed(2);
 
         const amount_to_refund = Math.round(parseFloat(client_refund) * 100);
         const amount_to_transfer = Math.round(parseFloat(partner_takes) * 100);
@@ -692,9 +705,9 @@ module.exports = app => {
         let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
 
         cart.noShow = true;
-        cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
-        cart.partner_takes = partner_takes.toFixed(2);
-        cart.client_cancellation_fee_received = client_refund.toFixed(2);
+        cart.ibeauty_connect_takes = ibeauty_connect_takes;
+        cart.partner_takes = partner_takes;
+        cart.client_cancellation_fee_received = client_refund;
         cart.stripe_refund_id = refund.id;
         cart.stripe_transfer_id = transfer.id;
         cart.dateCheckedIn = dateCheckedIn;
@@ -709,7 +722,7 @@ module.exports = app => {
           " at " +
           booking_time +
           ".You got paid a no show fee of $" +
-          partner_takes.toFixed(2) +
+          partner_takes +
           ". Thanks for using iBeautyConnect";
         smsFunctions.sendSMS("req", "res", partnerPhone, message);
         let clientMessage =
