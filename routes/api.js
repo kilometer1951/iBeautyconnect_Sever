@@ -501,50 +501,47 @@ module.exports = app => {
       });
 
       if (cart) {
-        const stripeFees = parseFloat(total) * 0.029 + 0.3;
-        const partner_takes = Math.round(parseFloat(total) * 0.8);
-        const ibeauty_connect_takes =
-          parseFloat(total) - partner_takes - stripeFees;
-
+        const stripeFees = (parseFloat(total) * 0.029 + 0.3).toFixed(2);
+        const new_total = (total - parseFloat(stripeFees)).toFixed(2);
+        const ibeauty_connect_takes = (parseFloat(new_total) * 0.2).toFixed(2);
+        const partner_takes = (
+          parseFloat(new_total) - parseFloat(ibeauty_connect_takes)
+        ).toFixed(2);
         const amount_to_transfer = Math.round(parseFloat(partner_takes) * 100);
 
-        console.log(stripeFees);
-        console.log(partner_takes);
-        console.log(ibeauty_connect_takes);
+        const transfer = await stripe.transfers.create({
+          amount: amount_to_transfer,
+          currency: "usd",
+          source_transaction: stripe_charge_id,
+          destination: partner_stripe_id
+        });
 
-        // const transfer = await stripe.transfers.create({
-        //   amount: amount_to_transfer,
-        //   currency: "usd",
-        //   source_transaction: stripe_charge_id,
-        //   destination: partner_stripe_id
-        // });
-        //
-        // let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
-        // let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
-        //
-        // cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
-        // cart.stripe_takes = stripeFees.toFixed(2);
-        // cart.partner_takes = partner_takes.toFixed(2);
-        // cart.stripe_transfer_id = transfer.id;
-        // cart.dateCheckedIn = dateCheckedIn;
-        // cart.dateTimeCheckedIn = new Date();
-        // cart.orderIsComplete = true;
-        // cart.save();
-        //
-        // //update messages by removing from list
-        // const message = await Message.findOne({
-        //   client: clientId,
-        //   partner: partnerId,
-        //   deleted: false
-        // });
-        // if (message) {
-        //   message.deleted = true;
-        //   message.save();
-        // }
-        //
-        // //send notificiation to user to be done
-        //
-        // smsFunctions.sendSMS("req", "res", partnerPhone, "You just got paid.");
+        let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
+        let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
+
+        cart.ibeauty_connect_takes = ibeauty_connect_takes;
+        cart.stripe_takes = stripeFees;
+        cart.partner_takes = partner_takes;
+        cart.stripe_transfer_id = transfer.id;
+        cart.dateCheckedIn = dateCheckedIn;
+        cart.dateTimeCheckedIn = new Date();
+        cart.orderIsComplete = true;
+        cart.save();
+
+        //update messages by removing from list
+        const message = await Message.findOne({
+          client: clientId,
+          partner: partnerId,
+          deleted: false
+        });
+        if (message) {
+          message.deleted = true;
+          message.save();
+        }
+
+        //send notificiation to user to be done
+
+        smsFunctions.sendSMS("req", "res", partnerPhone, "You just got paid.");
 
         return httpRespond.authRespond(res, {
           status: true
