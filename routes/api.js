@@ -508,39 +508,43 @@ module.exports = app => {
 
         const amount_to_transfer = Math.round(parseFloat(partner_takes) * 100);
 
-        const transfer = await stripe.transfers.create({
-          amount: amount_to_transfer,
-          currency: "usd",
-          source_transaction: stripe_charge_id,
-          destination: partner_stripe_id
-        });
+        console.log(stripeFees);
+        console.log(partner_takes);
+        console.log(ibeauty_connect_takes);
 
-        let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
-        let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
-
-        cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
-        cart.stripe_takes = stripeFees.toFixed(2);
-        cart.partner_takes = partner_takes.toFixed(2);
-        cart.stripe_transfer_id = transfer.id;
-        cart.dateCheckedIn = dateCheckedIn;
-        cart.dateTimeCheckedIn = new Date();
-        cart.orderIsComplete = true;
-        cart.save();
-
-        //update messages by removing from list
-        const message = await Message.findOne({
-          client: clientId,
-          partner: partnerId,
-          deleted: false
-        });
-        if (message) {
-          message.deleted = true;
-          message.save();
-        }
-
-        //send notificiation to user to be done
-
-        smsFunctions.sendSMS("req", "res", partnerPhone, "You just got paid.");
+        // const transfer = await stripe.transfers.create({
+        //   amount: amount_to_transfer,
+        //   currency: "usd",
+        //   source_transaction: stripe_charge_id,
+        //   destination: partner_stripe_id
+        // });
+        //
+        // let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
+        // let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
+        //
+        // cart.ibeauty_connect_takes = ibeauty_connect_takes.toFixed(2);
+        // cart.stripe_takes = stripeFees.toFixed(2);
+        // cart.partner_takes = partner_takes.toFixed(2);
+        // cart.stripe_transfer_id = transfer.id;
+        // cart.dateCheckedIn = dateCheckedIn;
+        // cart.dateTimeCheckedIn = new Date();
+        // cart.orderIsComplete = true;
+        // cart.save();
+        //
+        // //update messages by removing from list
+        // const message = await Message.findOne({
+        //   client: clientId,
+        //   partner: partnerId,
+        //   deleted: false
+        // });
+        // if (message) {
+        //   message.deleted = true;
+        //   message.save();
+        // }
+        //
+        // //send notificiation to user to be done
+        //
+        // smsFunctions.sendSMS("req", "res", partnerPhone, "You just got paid.");
 
         return httpRespond.authRespond(res, {
           status: true
