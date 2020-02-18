@@ -9,6 +9,7 @@ smsFunctions.verification = async (req, res, phone, messageBody, code) => {
     from: "+17739749268",
     body: messageBody
   });
+  console.log(messageBody);
   return message;
 };
 
