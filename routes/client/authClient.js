@@ -81,7 +81,7 @@ module.exports = app => {
   });
 
   app.post("/api/update_device_token", async (req, res) => {
-    const client = await Client.find({ _id: req.body.clientId });
+    const client = await Client.findOne({ _id: req.body.clientId });
     client.deviceToken = req.body.token;
     client.save();
     return httpRespond.authRespond(res, {
