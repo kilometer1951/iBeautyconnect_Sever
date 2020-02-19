@@ -11,6 +11,7 @@ let clientSchema = new Schema({
     type: String,
     default: "https://oarnation.com/content/no-picture.jpg"
   },
+  deviceToken: { type: String, default: "" },
   search: { type: String, default: "all" },
   locationState: { type: String, default: "" },
   locationCity: { type: String, default: "" },

@@ -34,8 +34,8 @@ module.exports = app => {
     //   individual: { id_number: "624897317" }
     // });
     // console.log(sa);
-    // const ac = await stripe.accounts.list({});
-    // res.send(ac);
+    const ac = await stripe.accounts.retrieve("acct_1GDgksCK7cheqNJk");
+    res.send(ac.individual.verification.document.details_code);
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
@@ -74,6 +74,25 @@ module.exports = app => {
     // );
     //console.log(pay);
     //res.send(pay);
+  });
+
+  app.get("/api/check_stripe_document/:partnerId", async (req, res) => {
+    const partner = await Partner.findOne({
+      _id: req.params.partnerId
+    });
+
+    const ac = await stripe.accounts.retrieve(partner.stripeAccountId);
+    if (
+      ac.individual.verification.document.details_code == "document_invalid"
+    ) {
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    } else {
+      return httpRespond.authRespond(res, {
+        status: true
+      });
+    }
   });
 
   app.post("/auth/verification", async (req, res) => {
