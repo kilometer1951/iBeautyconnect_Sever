@@ -82,15 +82,14 @@ module.exports = app => {
     });
 
     const ac = await stripe.accounts.retrieve(partner.stripeAccountId);
-    if (
-      ac.individual.verification.document.details_code == "document_invalid"
-    ) {
+    console.log(ac.individual.verification.document);
+    if (ac.individual.verification.document.details_code != null) {
       return httpRespond.authRespond(res, {
-        status: false
+        status: true
       });
     } else {
       return httpRespond.authRespond(res, {
-        status: true
+        status: false
       });
     }
   });
