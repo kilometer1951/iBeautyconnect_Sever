@@ -10,7 +10,9 @@ const State = mongoose.model("states");
 const City = mongoose.model("cities");
 const Support = mongoose.model("supports");
 const Moment = require("moment");
+var path = require("path");
 
+const config = require("../config/secret");
 const httpRespond = require("../functions/httpRespond");
 const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
 
@@ -19,7 +21,54 @@ let messageBody = "";
 
 let apn = require("apn");
 
+// sandbox or production APN service
+const apnProduction = process.env.NODE_ENV === "production" ? true : false;
+
+// configuring APN with credentials
+const apnOptions = {
+  token: {
+    key: path.join(__dirname, "..", "certs", "AuthKey_366684G22N.p8"),
+    keyId: config.PushNotificationKEYID,
+    teamId: config.AppleTeamID
+  },
+  production: true
+};
+
+var apnProvider = new apn.Provider(apnOptions);
+
 module.exports = app => {
+  app.get("/api/send_notification/:clientId", async (req, res) => {
+    try {
+      const client = await Client.findOne({ _id: req.params.clientId });
+      const deviceTokens = client.deviceToken;
+      let notification = new apn.Notification({
+        alert: {
+          title: "Hello World",
+          body: "Hello world body"
+        },
+        topic: "com.org.appName",
+        payload: {
+          sender: "node-apn"
+        },
+        pushType: "background"
+      });
+
+      apnProvider.send(notification, deviceTokens).then(response => {
+        console.log(response.sent);
+        console.log(response.failed);
+      });
+
+      return httpRespond.authRespond(res, {
+        status: true
+      });
+    } catch (e) {
+      console.log(e);
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
+  });
+
   // app.post("/api/testN/", async (req, res) => {
   //   let provider = new apn.Provider({
   //     token: {
