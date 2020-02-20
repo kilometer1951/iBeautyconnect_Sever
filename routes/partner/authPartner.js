@@ -34,12 +34,12 @@ module.exports = app => {
     //   individual: { id_number: "624897317" }
     // });
     // console.log(sa);
-    const ac = await stripe.accounts.retrieve("acct_1GDgksCK7cheqNJk");
-    res.send(ac.individual.verification.document.details_code);
+    // const ac = await stripe.accounts.retrieve("acct_1GDgksCK7cheqNJk");
+    // res.send(ac.individual.verification.document.details_code);
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
-    //    await stripe.accounts.del("acct_1GDJF9HJY06jvVJ9");
+    //await stripe.accounts.del("acct_1GDgksCK7cheqNJk");
     // stripe.accounts.retrieveExternalAccount(
     //   "acct_1FmQD2EWMyi6h2Gs",
     //   "card_1FmRJjEWMyi6h2GsM0HXEzOR",
@@ -83,7 +83,7 @@ module.exports = app => {
 
     const ac = await stripe.accounts.retrieve(partner.stripeAccountId);
     console.log(ac.individual.verification.document);
-    if (ac.individual.verification.document.details_code != null) {
+    if (ac.individual.verification.document.details_code == null) {
       return httpRespond.authRespond(res, {
         status: true
       });
