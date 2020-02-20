@@ -27,11 +27,11 @@ const apnProduction = process.env.NODE_ENV === "production" ? true : false;
 // configuring APN with credentials
 const apnOptions = {
   token: {
-    key: path.join(__dirname, "..", "certs", "AuthKey_366684G22N.p8"),
+    key: path.join(__dirname, "..", "certs", "AuthKey_HP5C6549F2.p8"),
     keyId: config.PushNotificationKEYID,
     teamId: config.AppleTeamID
   },
-  production: true
+  production: apnProduction
 };
 
 var apnProvider = new apn.Provider(apnOptions);
@@ -57,7 +57,6 @@ module.exports = app => {
         console.log(response.sent);
         console.log(response.failed);
       });
-
       return httpRespond.authRespond(res, {
         status: true
       });
