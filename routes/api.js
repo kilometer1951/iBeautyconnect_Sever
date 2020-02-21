@@ -550,13 +550,9 @@ module.exports = app => {
 
       if (cart) {
         const stripeFees = (parseFloat(total) * 0.029 + 0.3).toFixed(2);
-        const new_total = (total - parseFloat(stripeFees)).toFixed(2);
-        const ibeauty_connect_takes = (parseFloat(new_total) * 0.168).toFixed(
-          2
-        );
-        const partner_takes = (
-          parseFloat(new_total) - parseFloat(ibeauty_connect_takes)
-        ).toFixed(2);
+        //  const new_total = (total - parseFloat(stripeFees)).toFixed(2);
+        const ibeauty_connect_takes = (parseFloat(total) * 0.168).toFixed(2);
+        const partner_takes = (parseFloat(total) * 0.8).toFixed(2);
         const amount_to_transfer = Math.round(parseFloat(partner_takes) * 100);
 
         const transfer = await stripe.transfers.create({
