@@ -33,7 +33,8 @@ const cartSchema = new Schema({
   client_cancellation_fee_description: {
     type: String,
     default: "20% for iBC, 30% to client and 50% to partner"
-  }
+  },
+  cancelledBy: { type: String, default: "" }
 });
 
 mongoose.model("carts", cartSchema);

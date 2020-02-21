@@ -418,6 +418,34 @@ module.exports = app => {
     }
   });
 
+  app.get("/api/cancelled_orders_partner/:partnerId/", async (req, res) => {
+    try {
+      let per_page = 10;
+      let page_no = parseInt(req.query.page);
+      let pagination = {
+        limit: per_page,
+        skip: per_page * (page_no - 1)
+      };
+      const cart = await Cart.find({
+        partner: req.params.partnerId,
+        hasCanceled: true
+      })
+        .populate("client")
+        .limit(pagination.limit)
+        .skip(pagination.skip);
+
+      return httpRespond.authRespond(res, {
+        status: true,
+        cart,
+        endOfFile: cart.length === 0 ? true : false
+      });
+    } catch (e) {
+      return httpRespond.authRespond(res, {
+        status: false
+      });
+    }
+  });
+
   app.get("/api/cancelled_orders/:clientId/", async (req, res) => {
     try {
       let per_page = 10;
@@ -549,6 +577,8 @@ module.exports = app => {
       });
 
       if (cart) {
+        //increment points for clients and partners
+
         const partner_takes = (parseFloat(total) * 0.8).toFixed(2);
         const stripeFees = (parseFloat(total) * 0.029 + 0.3).toFixed(2);
         const ibeauty_connect_takes = (
@@ -819,7 +849,7 @@ module.exports = app => {
         //send sms
         messageBody =
           req.body.messageData.message +
-          "Open the iBeautyConnect app to respond. Thanks iBeautyConnectPartner://messages.";
+          " Open the iBeautyConnect app to respond. Thanks iBeautyConnectPartner://messages.";
         smsFunctions.sendSMS("req", "res", partner.phone, messageBody);
       }
 

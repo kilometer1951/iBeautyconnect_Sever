@@ -320,8 +320,10 @@ module.exports = app => {
         let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
 
         cart.hasCanceled = true;
+        cart.cancelledBy = "client";
         cart.ibeauty_connect_takes = ibeauty_connect_takes;
         cart.partner_takes = partner_takes;
+        cart.stripe_takes = stripeFees;
         cart.client_cancellation_fee_received = client_refund;
         cart.stripe_refund_id = refund.id;
         cart.stripe_transfer_id = transfer.id;
@@ -706,8 +708,11 @@ module.exports = app => {
         let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
 
         cart.noShow = true;
+        cart.hasCanceled = true;
+        cart.cancelledBy = "partner";
         cart.ibeauty_connect_takes = ibeauty_connect_takes;
         cart.partner_takes = partner_takes;
+        cart.stripe_takes = stripeFees;
         cart.client_cancellation_fee_received = client_refund;
         cart.stripe_refund_id = refund.id;
         cart.stripe_transfer_id = transfer.id;
