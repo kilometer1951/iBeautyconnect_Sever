@@ -14,7 +14,7 @@ var path = require("path");
 
 const config = require("../config/secret");
 const httpRespond = require("../functions/httpRespond");
-const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 
 const smsFunctions = require("../functions/SMS");
 let messageBody = "";
@@ -549,10 +549,13 @@ module.exports = app => {
       });
 
       if (cart) {
-        const stripeFees = (parseFloat(total) * 0.029 + 0.3).toFixed(2);
-        //  const new_total = (total - parseFloat(stripeFees)).toFixed(2);
-        const ibeauty_connect_takes = (parseFloat(total) * 0.168).toFixed(2);
         const partner_takes = (parseFloat(total) * 0.8).toFixed(2);
+        const stripeFees = (parseFloat(total) * 0.029 + 0.3).toFixed(2);
+        const ibeauty_connect_takes = (
+          parseFloat(total) -
+          (parseFloat(stripeFees) + parseFloat(partner_takes))
+        ).toFixed(2);
+
         const amount_to_transfer = Math.round(parseFloat(partner_takes) * 100);
 
         const transfer = await stripe.transfers.create({

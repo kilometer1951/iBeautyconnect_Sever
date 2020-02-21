@@ -3,7 +3,7 @@ const Client = mongoose.model("clients");
 const Partner = mongoose.model("partners");
 const Cart = mongoose.model("carts");
 const Message = mongoose.model("messages");
-const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const moment = require("moment");
 const schedule = require("node-schedule");
 
@@ -281,18 +281,21 @@ module.exports = app => {
 
       if (cart) {
         const stripeFees = (parseFloat(total) * 0.029 + 0.3).toFixed(2);
-        const new_total = (total - parseFloat(stripeFees)).toFixed(2);
-        const ibeauty_connect_takes = (parseFloat(new_total) * 0.168).toFixed(
-          2
-        );
-        const partner_takes = (parseFloat(new_total) * 0.5).toFixed(2);
+        //const new_total = (total - parseFloat(stripeFees)).toFixed(2);
+        const ibeauty_connect_takes = (parseFloat(total) * 0.168).toFixed(2);
+        const partner_takes = (parseFloat(total) * 0.5).toFixed(2);
 
         const client_refund = (
           total -
-          parseFloat(stripeFees) -
-          parseFloat(ibeauty_connect_takes) -
-          parseFloat(partner_takes)
+          (parseFloat(stripeFees) +
+            parseFloat(ibeauty_connect_takes) +
+            parseFloat(partner_takes))
         ).toFixed(2);
+
+        // console.log(partner_takes);
+        // console.log(ibeauty_connect_takes);
+        // console.log(client_refund);
+        // console.log(stripeFees);
 
         const amount_to_refund = Math.round(parseFloat(client_refund) * 100);
         const amount_to_transfer = Math.round(parseFloat(partner_takes) * 100);
@@ -668,17 +671,15 @@ module.exports = app => {
 
       if (cart) {
         const stripeFees = (parseFloat(total) * 0.029 + 0.3).toFixed(2);
-        const new_total = (total - parseFloat(stripeFees)).toFixed(2);
-        const ibeauty_connect_takes = (parseFloat(new_total) * 0.168).toFixed(
-          2
-        );
-        const partner_takes = (parseFloat(new_total) * 0.5).toFixed(2);
+        //const new_total = (total - parseFloat(stripeFees)).toFixed(2);
+        const ibeauty_connect_takes = (parseFloat(total) * 0.168).toFixed(2);
+        const partner_takes = (parseFloat(total) * 0.5).toFixed(2);
 
         const client_refund = (
           total -
-          parseFloat(stripeFees) -
-          parseFloat(ibeauty_connect_takes) -
-          parseFloat(partner_takes)
+          (parseFloat(stripeFees) +
+            parseFloat(ibeauty_connect_takes) +
+            parseFloat(partner_takes))
         ).toFixed(2);
 
         const amount_to_refund = Math.round(parseFloat(client_refund) * 100);
