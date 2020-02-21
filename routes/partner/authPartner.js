@@ -282,31 +282,30 @@ module.exports = app => {
     upload.single("profilePhoto"),
     async (req, res) => {
       try {
-        console.log(req.file);
-        // const partner = await Partner.findOne({ _id: req.params.userId });
-        //
-        // if (partner.profilePhotoCloudinaryId === "") {
-        //   //new upload
-        //   const response = await cloudinary.uploader.upload(req.file.path);
-        //   partner.profilePhoto = response.url;
-        //   partner.profilePhotoCloudinaryId = response.public_id;
-        //   partner.save();
-        // } else {
-        //   //delete old photo and upload new photo
-        //   await cloudinary.v2.uploader.destroy(
-        //     partner.profilePhotoCloudinaryId
-        //   );
-        //   // //upload new photo
-        //   const response = await cloudinary.uploader.upload(req.file.path);
-        //   partner.profilePhoto = response.url;
-        //   partner.profilePhotoCloudinaryId = response.public_id;
-        //   partner.save();
-        // }
-        //
-        // return httpRespond.authRespond(res, {
-        //   status: true,
-        //   message: "upload complete"
-        // });
+        const partner = await Partner.findOne({ _id: req.params.userId });
+
+        if (partner.profilePhotoCloudinaryId === "") {
+          //new upload
+          const response = await cloudinary.uploader.upload(req.file.path);
+          partner.profilePhoto = response.url;
+          partner.profilePhotoCloudinaryId = response.public_id;
+          partner.save();
+        } else {
+          //delete old photo and upload new photo
+          await cloudinary.v2.uploader.destroy(
+            partner.profilePhotoCloudinaryId
+          );
+          // //upload new photo
+          const response = await cloudinary.uploader.upload(req.file.path);
+          partner.profilePhoto = response.url;
+          partner.profilePhotoCloudinaryId = response.public_id;
+          partner.save();
+        }
+
+        return httpRespond.authRespond(res, {
+          status: true,
+          message: "upload complete"
+        });
       } catch (e) {
         console.log(e);
         return httpRespond.authRespond(res, {
