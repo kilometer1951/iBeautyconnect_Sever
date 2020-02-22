@@ -156,6 +156,7 @@ module.exports = app => {
     });
 
     const total_earned_per_week = await Cart.find({
+      _id: req.params.userId,
       orderIsComplete: true,
       hasCheckedout: true,
       dateCheckedIn: {
