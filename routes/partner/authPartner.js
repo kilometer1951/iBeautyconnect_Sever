@@ -271,6 +271,8 @@ module.exports = app => {
     user.locationCity = req.body.locationCity;
     user.postal_code = req.body.postalCode;
     user.address = req.body.address;
+    user.locationLat = req.body.locationLat;
+    user.locationLng = req.body.locationLng;
     user.save();
     return httpRespond.authRespond(res, {
       status: true
