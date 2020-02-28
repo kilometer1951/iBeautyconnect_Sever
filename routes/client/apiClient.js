@@ -397,8 +397,10 @@ module.exports = app => {
         amount: amount,
         currency: "usd",
         source: tokenId,
+        transfer_group: cartId,
         description:
-          "Payment for Health and Beauty services to: " + partner_name
+          "Payment for Health and Beauty services to: " + partner_name,
+        statement_descriptor: "iBeautyConnect"
       });
 
       //update cart
@@ -464,7 +466,10 @@ module.exports = app => {
         currency: "usd",
         customer: stripeId,
         source: cardId,
-        transfer_group: cartId
+        transfer_group: cartId,
+        description:
+          "Payment for Health and Beauty services to: " + partner_name,
+        statement_descriptor: "iBeautyConnect"
       });
 
       //update cart

@@ -817,8 +817,30 @@ module.exports = app => {
       });
 
       const partner = await Partner.findOne({
-        _id: req.body.messageData.partnerId
+        _id: req.body.messageData.to
       });
+
+      const client = await Client.findOne({
+        _id: req.body.messageData.to
+      });
+
+      if (partner) {
+        //send SMS
+        smsFunctions.sendSMS(
+          "req",
+          "res",
+          partner.phone,
+          "You have a new message open the iBeautyConnect app to respond. iBeautyConnectPartner://messages."
+        );
+      } else {
+        //send SMS
+        smsFunctions.sendSMS(
+          "req",
+          "res",
+          client.phone,
+          "You have a new message open the iBeautyConnect app to respond. iBeautyConnectClient://messages."
+        );
+      }
 
       if (req.body.messageData.type == "reschedule") {
         //send sms
