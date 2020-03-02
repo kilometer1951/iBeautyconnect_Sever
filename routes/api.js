@@ -608,6 +608,18 @@ module.exports = app => {
         cart.orderIsComplete = true;
         cart.save();
 
+        const client = await Client.findOne({
+          _id: clientId
+        });
+        client.points += 2;
+        client.save();
+
+        const partner = await Partner.findOne({
+          _id: partnerId
+        });
+        partner.points += 2;
+        partner.save();
+
         //update messages by removing from list
         const message = await Message.findOne({
           client: clientId,

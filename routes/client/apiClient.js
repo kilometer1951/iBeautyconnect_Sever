@@ -24,11 +24,10 @@ const upload = multer({
 
 const cloudinary = require("cloudinary");
 cloudinary.config({
-  cloud_name: "ibeautyconnect",
-  api_key: "678214445386768",
-  api_secret: "R5OQpKQ93luFxI7lVXZZ_nsUUsk"
+  cloud_name: "ibc",
+  api_key: "887482388487867",
+  api_secret: "IDtj1fdfnQNJV-BTQ0mgfGOIIgU"
 });
-
 module.exports = app => {
   app.get("/api/get_points/:clientId", async (req, res) => {
     try {
@@ -728,7 +727,7 @@ module.exports = app => {
         //send sms
         const newDate = moment(new Date(booking_date)).format("MMM DD, YYYY");
         let message =
-          "No show payment confirmation for " +
+          "No-show payment confirmation for " +
           newDate +
           " at " +
           booking_time +
