@@ -155,15 +155,14 @@ module.exports = app => {
       stripe_account: req.params.stripeAccountId
     });
 
-    // dateCheckedIn: {
-    //   $gte: newStartOfWeekDateTime,
-    //   $lte: newEndOfWeekDateTime
-    // }
-
     const total_earned_per_week = await Cart.find({
       partner: req.params.userId,
       orderIsComplete: true,
-      hasCheckedout: true
+      hasCheckedout: true,
+      dateCheckedIn: {
+        $gte: newStartOfWeekDateTime,
+        $lte: newEndOfWeekDateTime
+      }
     });
 
     let total = 0;
