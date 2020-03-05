@@ -61,8 +61,7 @@ mongoose.connection.on("open", () => {
 
 const agenda = new Agenda({
   db: {
-    address:
-      "mongodb+srv://root:Louis1951@cluster0-5m2fl.mongodb.net/test?retryWrites=true&w=majority",
+    address: config.database,
     collection: "agendaJobs",
     options: { useNewUrlParser: true }
   }
