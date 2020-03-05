@@ -64,7 +64,7 @@ const agenda = new Agenda({
     address:
       "mongodb+srv://root:Louis1951@cluster0-15w62.mongodb.net/test?retryWrites=true&w=majority",
     collection: "agendaJobs",
-    options: { useNewUrlParser: true }
+    options: { useNewUrlParser: true, useUnifiedTopology: true }
   }
 });
 

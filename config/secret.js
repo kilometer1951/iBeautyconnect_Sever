@@ -8,5 +8,4 @@ module.exports = {
 };
 
 // mongodb+srv://root:Louis1951@cluster0-15w62.mongodb.net/test?retryWrites=true&w=majority
-
 // mongodb://root:Louis1951@ds033639.mlab.com:33639/ibeautyconnectpartner
