@@ -6,3 +6,7 @@ module.exports = {
   PushNotificationKEYID: "HP5C6549F2",
   AppleTeamID: "TRBNA383H2"
 };
+
+// mongodb+srv://root:Louis1951@cluster0-15w62.mongodb.net/test?retryWrites=true&w=majority
+
+// mongodb://root:Louis1951@ds033639.mlab.com:33639/ibeautyconnectpartner
