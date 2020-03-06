@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const Profession = mongoose.model("professions");
 const Partner = mongoose.model("partners");
+const Support = mongoose.model("supports");
+
 const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
 const ip = require("ip");
 
@@ -186,4 +188,19 @@ module.exports = app => {
       }
     }
   );
+
+  app.get("/apiAdmin/getUsers", async (req, res) => {
+    const response = await Partner.find({ isApproved: false });
+    return httpRespond.authRespond(res, {
+      status: true,
+      response
+    });
+  });
+  app.get("/apiAdmin/getSupport", async (req, res) => {
+    const response = await Support.find({});
+    return httpRespond.authRespond(res, {
+      status: true,
+      response
+    });
+  });
 };

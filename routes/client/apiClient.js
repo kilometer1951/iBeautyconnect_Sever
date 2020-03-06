@@ -248,7 +248,9 @@ module.exports = app => {
         description: "Customer for: " + req.body.update_email
       });
 
-      console.log(respond);
+      const user = await Client.findOne({ stripeId: req.body.stripeId });
+      user.email = req.body.update_email;
+      user.save();
 
       return httpRespond.authRespond(res, {
         status: true
