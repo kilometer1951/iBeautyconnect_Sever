@@ -3,7 +3,7 @@ const Profession = mongoose.model("professions");
 const Partner = mongoose.model("partners");
 const Support = mongoose.model("supports");
 
-const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const ip = require("ip");
 
 let messageBody = "";
