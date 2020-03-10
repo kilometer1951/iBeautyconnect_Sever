@@ -3,7 +3,7 @@ const Profession = mongoose.model("professions");
 const Partner = mongoose.model("partners");
 const Support = mongoose.model("supports");
 
-const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
 const ip = require("ip");
 
 let messageBody = "";
@@ -110,7 +110,7 @@ module.exports = app => {
   );
 
   //Apple review team activation
-  app.post(
+  app.get(
     "/adminApi/has_auth/accoun_has_been_approved_apple_review_team/",
     async (req, res) => {
       try {
@@ -183,7 +183,8 @@ module.exports = app => {
         });
       } catch (e) {
         return httpRespond.authRespond(res, {
-          status: false
+          status: false,
+          message: "a message has been sent to you. Get started"
         });
       }
     }
