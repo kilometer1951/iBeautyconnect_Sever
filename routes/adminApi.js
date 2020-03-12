@@ -116,7 +116,7 @@ module.exports = app => {
       try {
         //find the user and update isActive to true
         const user = await Partner.findOne({
-          email: "appleReviewTeam@ibeautyconnect.com"
+          email: "apple_review_team@ibeautyconnect.com"
         });
         const ssnSplit = user.ssnNumber.split("");
         const lastFour = ssnSplit
