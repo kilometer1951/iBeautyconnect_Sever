@@ -422,6 +422,7 @@ module.exports = app => {
   app.get(
     "/api/query_partner_agenda_by_date/:partnerId/:dateTime",
     async (req, res) => {
+      console.log(new Date(req.params.dateTime));
       const allAppoitments = await Cart.find({
         partner: req.params.partnerId,
         hasCheckedout: true,

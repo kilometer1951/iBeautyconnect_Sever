@@ -325,7 +325,7 @@ module.exports = app => {
 
   app.get("/api/get_daily_appoitments/:userId", async (req, res) => {
     let newDate = Moment(new Date()).format("YYYY-MM-DD");
-    let dateTime = new Date(newDate + "" + "T06:00:00.000Z");
+    let dateTime = new Date(newDate + "" + "T05:00:00.000Z");
 
     const dailyAppoitments = await Cart.find({
       partner: req.params.userId,
