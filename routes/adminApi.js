@@ -76,6 +76,7 @@ module.exports = app => {
         user.isApprovedNote = "account approved";
         user.stripeAccountId = accountDetails.id;
         user.staffHandler = req.params.staffName;
+        user.liveRequest = true;
 
         //send the partner a welcome messsage
         messageBody = `Congratulation on your approval ${user.fName}. Welcome to the iBeautyConnect family. We are here for you. Open the iBeautyConnect app to get started iBeautyConnectPartner://get_started`;
@@ -173,6 +174,7 @@ module.exports = app => {
         user.isApprovedNote = "account approved";
         user.stripeAccountId = accountDetails.id;
         user.staffHandler = "Wilson";
+        user.liveRequest = true;
 
         //send the partner a welcome messsage
         messageBody = `Congratulation on your approval ${user.fName}. Welcome to the iBeautyConnect family. We are here for you. Open the iBeautyConnect app to get started iBeautyConnectPartner://get_started`;

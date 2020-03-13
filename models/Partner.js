@@ -24,6 +24,7 @@ let partnerSchema = new Schema({
   locationCity: { type: String, default: "" },
   address: { type: String, default: "" },
   postal_code: { type: String, default: "" },
+  country_code: { type: String, default: "+1" },
   locationLat: { type: String, default: "" },
   locationLng: { type: String, default: "" },
   ssnNumber: { type: String, default: "" },
