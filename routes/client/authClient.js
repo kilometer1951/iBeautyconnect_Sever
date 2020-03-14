@@ -15,7 +15,7 @@ module.exports = app => {
       messageBody =
         "Your verification code is: " +
         code +
-        ".iBeautyconnect is a marketplace for licensed health and beauty professionals";
+        ". iBeautyconnect is a marketplace for licensed health and beauty professionals";
       await smsFunctions.verification(
         req,
         res,

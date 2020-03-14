@@ -99,7 +99,8 @@ module.exports = app => {
     try {
       const code = Math.floor(Math.random() * 100) + 9000;
       //  send verification code
-      messageBody = "iBeautyconnect Partner.Your verification code is: " + code;
+      messageBody =
+        "iBeautyconnect Partner. Your verification code is: " + code;
       const response = await smsFunctions.verification(
         req,
         res,
@@ -130,7 +131,8 @@ module.exports = app => {
       }
 
       //  send verification code
-      messageBody = "iBeautyconnect Partner.Your verification code is: " + code;
+      messageBody =
+        "iBeautyconnect Partner. Your verification code is: " + code;
       const response = await smsFunctions.verification(
         req,
         res,
