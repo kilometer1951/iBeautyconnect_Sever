@@ -160,6 +160,12 @@ module.exports = app => {
       });
     }
 
+    //send me a message if apple review team
+    if (req.body.email === "apple_review_team") {
+      let message = "Apple in review";
+      smsFunctions.sendSMS("req", "res", "312-401-0122", message);
+    }
+
     const newUser = {
       fName: req.body.fName,
       lName: req.body.lName,
