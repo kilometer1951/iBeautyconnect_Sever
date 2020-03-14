@@ -161,7 +161,7 @@ module.exports = app => {
     }
 
     //send me a message if apple review team
-    if (req.body.email === "apple_review_team") {
+    if (req.body.email === "apple_review_team@ibeautyconnect.com") {
       let message = "Apple in review";
       smsFunctions.sendSMS("req", "res", "312-401-0122", message);
     }
