@@ -72,7 +72,7 @@ module.exports = app => {
           $match: {
             isApproved: true,
             hasGoneThroughFinalScreen: true,
-            email: { $ne: "appleReviewTeam@ibeautyconnect.com" }
+            email: { $ne: "apple_review_team@ibeautyconnect.com" }
           }
         },
         { $sample: { size: partnerCount } }
@@ -99,7 +99,7 @@ module.exports = app => {
           $match: {
             isApproved: true,
             hasGoneThroughFinalScreen: true,
-            email: { $ne: "appleReviewTeam@ibeautyconnect.com" },
+            email: { $ne: "apple_review_team@ibeautyconnect.com" },
             locationCity: { $regex: client.searchByCity },
             locationState: { $regex: client.searchByState },
             profession: { $regex: client.searchByProfession }
