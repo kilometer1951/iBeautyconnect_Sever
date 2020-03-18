@@ -3,7 +3,7 @@ const Profession = mongoose.model("professions");
 const Partner = mongoose.model("partners");
 const Support = mongoose.model("supports");
 
-const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
 const ip = require("ip");
 
 let messageBody = "";
@@ -117,7 +117,7 @@ module.exports = app => {
       try {
         //find the user and update isActive to true
         const user = await Partner.findOne({
-          email: "apple_review_team@ibeautyconnect.com"
+          email: "review_team@ibeautyconnect.com"
         });
         const ssnSplit = user.ssnNumber.split("");
         const lastFour = ssnSplit

@@ -3,7 +3,7 @@ const Client = mongoose.model("clients");
 const Partner = mongoose.model("partners");
 const Cart = mongoose.model("carts");
 const Message = mongoose.model("messages");
-const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
 const moment = require("moment");
 const schedule = require("node-schedule");
 
@@ -72,7 +72,7 @@ module.exports = app => {
           $match: {
             isApproved: true,
             hasGoneThroughFinalScreen: true,
-            email: { $ne: "apple_review_team@ibeautyconnect.com" }
+            email: { $ne: "review_team@ibeautyconnect.com" }
           }
         },
         { $sample: { size: partnerCount } }
@@ -99,7 +99,7 @@ module.exports = app => {
           $match: {
             isApproved: true,
             hasGoneThroughFinalScreen: true,
-            email: { $ne: "apple_review_team@ibeautyconnect.com" },
+            email: { $ne: "review_team@ibeautyconnect.com" },
             locationCity: { $regex: client.searchByCity },
             locationState: { $regex: client.searchByState },
             profession: { $regex: client.searchByProfession }
