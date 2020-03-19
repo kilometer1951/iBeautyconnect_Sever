@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Partner = mongoose.model("partners");
-const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const ip = require("ip");
 
 const password = require("../../functions/password");
@@ -39,7 +39,7 @@ module.exports = app => {
     // const account = await stripe.accountCards.list();
     // console.log(account);
     // res.send(account);
-    // await stripe.accounts.del("acct_1GMaQVEy5mZHXP0w");
+    // await stripe.accounts.del("acct_1GOCS5JhwB5OrPTY");
     // res.send(true);
     // stripe.accounts.retrieveExternalAccount(
     //   "acct_1FmQD2EWMyi6h2Gs",
