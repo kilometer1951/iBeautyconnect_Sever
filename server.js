@@ -92,6 +92,7 @@ require("./socket/chatSocket")(app, io);
 require("./socket/appSocket")(app, io);
 require("./socket/supportSocket")(app, io);
 //require("./routes/adminApi")(app);
+require("./routes/supportApi")(app);
 
 const port = process.env.PORT || 5002;
 http.listen(port, () => {
