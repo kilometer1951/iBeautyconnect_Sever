@@ -3,7 +3,7 @@ const Client = mongoose.model("clients");
 const Partner = mongoose.model("partners");
 const Cart = mongoose.model("carts");
 const Message = mongoose.model("messages");
-const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const moment = require("moment");
 const schedule = require("node-schedule");
 
@@ -321,7 +321,7 @@ module.exports = app => {
         //update cart
 
         let newCheckInDate = moment(new Date()).format("YYYY-MM-DD");
-        let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
+        let dateCheckedIn = new Date(newCheckInDate + "" + "T05:00:00.000Z");
 
         cart.hasCanceled = true;
         cart.cancelledBy = "client";
@@ -407,6 +407,9 @@ module.exports = app => {
         statement_descriptor: "iBeautyConnect"
       });
 
+      let newBookedDate = moment(bookingDate).format("YYYY-MM-DD");
+      let booked = new Date(newBookedDate + "" + "T05:00:00.000Z");
+
       //update cart
       const cart = await Cart.findOne({
         _id: cartId
@@ -462,6 +465,8 @@ module.exports = app => {
       } = req.body.chargeCardData;
 
       const newDate = moment(new Date(bookingDate)).format("MMM DD, YYYY");
+      // let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
+      // let dateCheckedIn = new Date(newCheckInDate + "" + "T05:00:00.000Z");
 
       //charge card
       let amount = Math.round(parseFloat(total) * 100);
@@ -476,6 +481,9 @@ module.exports = app => {
         statement_descriptor: "iBeautyConnect"
       });
 
+      let newBookedDate = moment(bookingDate).format("YYYY-MM-DD");
+      let booked = new Date(newBookedDate + "" + "T05:00:00.000Z");
+
       //update cart
       const cart = await Cart.findOne({
         _id: cartId
@@ -483,7 +491,7 @@ module.exports = app => {
       cart.hasCheckedout = true;
       cart.subTotal = subTotal;
       cart.total = total;
-      cart.booking_date = bookingDate;
+      cart.booking_date = booked;
       cart.booking_time = bookingTime;
       cart.stripe_charge_id = charge.id;
       cart.comfort_fee = comfort_fee;
@@ -714,7 +722,7 @@ module.exports = app => {
         //update cart
 
         let newCheckInDate = moment(new Date()).format("YYYY-MM-DD");
-        let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
+        let dateCheckedIn = new Date(newCheckInDate + "" + "T05:00:00.000Z");
 
         cart.noShow = true;
         cart.hasCanceled = true;

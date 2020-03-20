@@ -14,7 +14,7 @@ var path = require("path");
 
 const config = require("../config/secret");
 const httpRespond = require("../functions/httpRespond");
-const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 
 const smsFunctions = require("../functions/SMS");
 let messageBody = "";
@@ -147,10 +147,10 @@ module.exports = app => {
 
     //convert date to regular time zone
     let newStartDate = Moment(startOfWeek).format("YYYY-MM-DD");
-    let newStartOfWeekDateTime = new Date(newStartDate + "" + "T06:00:00.000Z");
+    let newStartOfWeekDateTime = new Date(newStartDate + "" + "T05:00:00.000Z");
 
     let newEndDate = Moment(endOfWeek).format("YYYY-MM-DD");
-    let newEndOfWeekDateTime = new Date(newEndDate + "" + "T06:00:00.000Z");
+    let newEndOfWeekDateTime = new Date(newEndDate + "" + "T05:00:00.000Z");
 
     const balance = await stripe.balance.retrieve({
       stripe_account: req.params.stripeAccountId
@@ -598,7 +598,7 @@ module.exports = app => {
         });
 
         let newCheckInDate = Moment(new Date()).format("YYYY-MM-DD");
-        let dateCheckedIn = new Date(newCheckInDate + "" + "T06:00:00.000Z");
+        let dateCheckedIn = new Date(newCheckInDate + "" + "T05:00:00.000Z");
 
         cart.ibeauty_connect_takes = ibeauty_connect_takes;
         cart.stripe_takes = stripeFees;

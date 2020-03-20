@@ -7,7 +7,7 @@ const Rate = mongoose.model("rates");
 const Moment = require("moment");
 const Cart = mongoose.model("carts");
 
-const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
+const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
 const ip = require("ip");
 
 const multer = require("multer");
@@ -352,11 +352,11 @@ module.exports = app => {
       //convert date to regular time zone
       let newStartDate = Moment(startOfWeek).format("YYYY-MM-DD");
       let newStartOfWeekDateTime = new Date(
-        newStartDate + "" + "T06:00:00.000Z"
+        newStartDate + "" + "T05:00:00.000Z"
       );
 
       let newEndDate = Moment(endOfWeek).format("YYYY-MM-DD");
-      let newEndOfWeekDateTime = new Date(newEndDate + "" + "T06:00:00.000Z");
+      let newEndOfWeekDateTime = new Date(newEndDate + "" + "T05:00:00.000Z");
 
       const cart = await Cart.find({
         partner: req.params.partnerId,
@@ -423,6 +423,7 @@ module.exports = app => {
     "/api/query_partner_agenda_by_date/:partnerId/:dateTime",
     async (req, res) => {
       console.log(new Date(req.params.dateTime));
+      //needs adjustment
       const allAppoitments = await Cart.find({
         partner: req.params.partnerId,
         hasCheckedout: true,
