@@ -5,7 +5,7 @@ const Support = mongoose.model("supports");
 const Client = mongoose.model("clients");
 const Cart = mongoose.model("carts");
 
-const stripe = require("stripe")("sk_test_v7ZVDHiaLp9PXgOqQ65c678g");
+const stripe = require("stripe")("sk_live_FsieDnf5IJFj2D28Wtm3OFv3");
 const ip = require("ip");
 
 let messageBody = "";
