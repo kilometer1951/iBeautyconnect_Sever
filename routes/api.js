@@ -127,65 +127,77 @@ module.exports = app => {
     }
   });
 
-  app.get("/api/get_earnings/:userId/:stripeAccountId", async (req, res) => {
-    const earnings = {};
-    let curr = new Date(); // get current date
-    let first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
-    let last = first + 6; // last day is the first day + 6
+  app.get(
+    "/api/get_earnings/:userId/:stripeAccountId/:dateTime",
+    async (req, res) => {
+      try {
+        const earnings = {};
+        let curr = new Date(req.params.dateTime); // get current date
+        let first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+        let last = first + 6; // last day is the first day + 6
 
-    const firstDayOfWeek = Moment(
-      new Date(curr.setDate(first)),
-      "DD-MM-YYYY"
-    ).add(1, "day");
-    const lastDayOfWeek = Moment(
-      new Date(curr.setDate(last)),
-      "DD-MM-YYYY"
-    ).add(1, "day");
+        const firstDayOfWeek = Moment(
+          new Date(curr.setDate(first)),
+          "DD-MM-YYYY"
+        ).add(1, "day");
+        const lastDayOfWeek = Moment(
+          new Date(curr.setDate(last)),
+          "DD-MM-YYYY"
+        ).add(1, "day");
 
-    const startOfWeek = Moment(firstDayOfWeek).format();
-    const endOfWeek = Moment(lastDayOfWeek).format();
+        const startOfWeek = Moment(firstDayOfWeek).format();
+        const endOfWeek = Moment(lastDayOfWeek).format();
 
-    //convert date to regular time zone
-    let newStartDate = Moment(startOfWeek).format("YYYY-MM-DD");
-    let newStartOfWeekDateTime = new Date(newStartDate + "" + "T05:00:00.000Z");
+        //convert date to regular time zone
+        let newStartDate = Moment(startOfWeek).format("YYYY-MM-DD");
+        let newStartOfWeekDateTime = new Date(
+          newStartDate + "" + "T05:00:00.000Z"
+        );
 
-    let newEndDate = Moment(endOfWeek).format("YYYY-MM-DD");
-    let newEndOfWeekDateTime = new Date(newEndDate + "" + "T05:00:00.000Z");
+        let newEndDate = Moment(endOfWeek).format("YYYY-MM-DD");
+        let newEndOfWeekDateTime = new Date(newEndDate + "" + "T05:00:00.000Z");
 
-    const balance = await stripe.balance.retrieve({
-      stripe_account: req.params.stripeAccountId
-    });
+        const balance = await stripe.balance.retrieve({
+          stripeAccount: req.params.stripeAccountId
+        });
 
-    const total_earned_per_week = await Cart.find({
-      partner: req.params.userId,
-      orderIsComplete: true,
-      hasCheckedout: true,
-      dateCheckedIn: {
-        $gte: newStartOfWeekDateTime,
-        $lte: newEndOfWeekDateTime
+        const total_earned_per_week = await Cart.find({
+          partner: req.params.userId,
+          orderIsComplete: true,
+          hasCheckedout: true,
+          dateCheckedIn: {
+            $gte: newStartOfWeekDateTime,
+            $lte: newEndOfWeekDateTime
+          }
+        });
+
+        let total = 0;
+
+        for (var i = 0; i < total_earned_per_week.length; i++) {
+          let total_earned = parseFloat(total_earned_per_week[i].partner_takes);
+          total += parseFloat(total_earned);
+        }
+
+        earnings.available_balance = parseFloat(
+          (balance.pending[0].amount + balance.available[0].amount) / 100
+        ).toFixed(2);
+
+        earnings.total_earned_per_week = parseFloat(total).toFixed(2);
+
+        //console.log(Moment(curr).format());
+
+        return httpRespond.authRespond(res, {
+          status: true,
+          earnings
+        });
+      } catch (e) {
+        console.log(e);
+        return httpRespond.authRespond(res, {
+          status: false
+        });
       }
-    });
-
-    let total = 0;
-
-    for (var i = 0; i < total_earned_per_week.length; i++) {
-      let total_earned = parseFloat(total_earned_per_week[i].partner_takes);
-      total += parseFloat(total_earned);
     }
-
-    earnings.available_balance = parseFloat(
-      (balance.pending[0].amount + balance.available[0].amount) / 100
-    ).toFixed(2);
-
-    earnings.total_earned_per_week = parseFloat(total).toFixed(2);
-
-    //console.log(Moment(curr).format());
-
-    return httpRespond.authRespond(res, {
-      status: true,
-      earnings
-    });
-  });
+  );
 
   app.get(
     "/api/check_cart/:clientId/:partnerId/:serviceId",
@@ -323,15 +335,12 @@ module.exports = app => {
     });
   });
 
-  app.get("/api/get_daily_appoitments/:userId", async (req, res) => {
-    let newDate = Moment(new Date()).format("YYYY-MM-DD");
-    let dateTime = new Date(newDate + "" + "T05:00:00.000Z");
-
+  app.get("/api/get_daily_appoitments/:userId/:dateTime", async (req, res) => {
     const dailyAppoitments = await Cart.find({
       partner: req.params.userId,
       hasCheckedout: true,
       orderIsComplete: false,
-      booking_date: dateTime
+      booking_date: req.params.dateTime
     })
       .populate("client")
       .populate("partner")
