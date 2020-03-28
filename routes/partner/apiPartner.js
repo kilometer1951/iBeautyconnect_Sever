@@ -325,7 +325,7 @@ module.exports = app => {
     });
   });
 
-  app.get("/api/weekly_activity/:partnerId", async (req, res) => {
+  app.get("/api/weekly_activity/:partnerId/:dateTime", async (req, res) => {
     try {
       let per_page = 15;
       let page_no = parseInt(req.query.page);
@@ -333,7 +333,7 @@ module.exports = app => {
         limit: per_page,
         skip: per_page * (page_no - 1)
       };
-      let curr = new Date(); // get current date
+      let curr = new Date(req.params.dateTime); // get current date
       let first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
       let last = first + 6; // last day is the first day + 6
 
