@@ -173,6 +173,7 @@ module.exports = app => {
       email: req.body.email,
       points: 50,
       country: "usa",
+      currency: "USD",
       password: password.encryptPassword(req.body.password),
       licenseDocument: [
         {

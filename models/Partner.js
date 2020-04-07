@@ -72,7 +72,8 @@ let partnerSchema = new Schema({
   image5: { type: String, default: "" },
   cloudinaryId_image5: { type: String, default: "" },
   cloudinaryId_video: { type: String, default: "" },
-  country: { type: String, default: "" }
+  country: { type: String, default: "" },
+  currency: { type: String, default: "" }
 });
 
 mongoose.model("partners", partnerSchema);
